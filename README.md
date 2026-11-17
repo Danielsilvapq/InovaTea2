@@ -74,4 +74,4 @@ O cadastro exige consentimento explícito. Antes de usar com pacientes reais, re
 privacidade, a hospedagem e os contratos com os operadores de dados.
 
 ---
-Projeto de TCC — Universidade Fametro.
+Desenvolvido para uso clínico e familiar no acompanhamento do TEA.
