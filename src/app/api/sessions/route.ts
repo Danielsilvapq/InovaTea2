@@ -9,7 +9,7 @@ import { unlockedLevel } from "@/lib/stats";
 const schema = z.object({
   patientId: z.string(),
   activityKey: z.string(),
-  level: z.number().int().min(1).max(3),
+  level: z.number().int().min(1).max(5),
   correct: z.number().int().min(0),
   wrong: z.number().int().min(0),
   total: z.number().int().min(0),

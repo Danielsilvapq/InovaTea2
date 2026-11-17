@@ -1,20 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { BREATHING_BY_LEVEL } from "@/lib/activities";
 import { useRouter } from "next/navigation";
 import { ActivityShell } from "./ActivityShell";
 import { ResultScreen } from "./ResultScreen";
 import { saveSession, useElapsed, type SaveResult } from "./useKid";
 
-const CYCLES = 5;
-const PHASES = [
-  { key: "in", label: "Puxe o ar pelo nariz", seconds: 4, scale: 1.35 },
-  { key: "hold", label: "Segure um pouquinho", seconds: 2, scale: 1.35 },
-  { key: "out", label: "Solte o ar pela boca", seconds: 5, scale: 1 },
-] as const;
-
-export function BreathingActivity({ patientId, reduceMotion }: { patientId: string; reduceMotion: boolean }) {
+export function BreathingActivity({ patientId, reduceMotion, level }: { patientId: string; reduceMotion: boolean; level: number }) {
   const router = useRouter();
+  const cfg = BREATHING_BY_LEVEL[level] ?? BREATHING_BY_LEVEL[1];
+  const CYCLES = cfg.cycles;
+  const PHASES = [
+    { key: "in", label: "Puxe o ar pelo nariz", seconds: cfg.inhale, scale: 1.35 },
+    { key: "hold", label: "Segure um pouquinho", seconds: cfg.hold, scale: 1.35 },
+    { key: "out", label: "Solte o ar pela boca", seconds: cfg.exhale, scale: 1 },
+  ] as const;
   const [started, setStarted] = useState(false);
   const [cycle, setCycle] = useState(0);
   const [phaseIdx, setPhaseIdx] = useState(0);
@@ -51,7 +52,7 @@ export function BreathingActivity({ patientId, reduceMotion }: { patientId: stri
     const result = await saveSession({
       patientId,
       activityKey: "respiracao",
-      level: 1,
+      level,
       correct: 0,
       wrong: 0,
       total: 0,
@@ -80,7 +81,7 @@ export function BreathingActivity({ patientId, reduceMotion }: { patientId: stri
         durationSec={done.duration}
         completed={done.completed}
         onRestart={restart}
-        message={done.completed ? "Você respirou com calma 5 vezes. Seu corpo agradece!" : "Tudo bem parar. Respirar um pouco já ajuda."}
+        message={done.completed ? `Você respirou com calma ${CYCLES} vezes. Seu corpo agradece!` : "Tudo bem parar. Respirar um pouco já ajuda."}
       />
     );
   }
@@ -90,6 +91,7 @@ export function BreathingActivity({ patientId, reduceMotion }: { patientId: stri
     <ActivityShell
       emoji="🎈"
       title="Respirar com o Balão"
+      level={level}
       step={cycle}
       totalSteps={CYCLES}
       stepLabel="Respiração"

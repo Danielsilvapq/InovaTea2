@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { SEQUENCE_ROUNDS, SEQUENCE_SHAPES } from "@/lib/activities";
+import { SEQUENCE_ROUNDS, SEQUENCE_SHAPES, sequenceShapesForLevel } from "@/lib/activities";
 import { ActivityShell } from "./ActivityShell";
 import { ResultScreen } from "./ResultScreen";
 import { saveSession, useElapsed, useSoftSound, type SaveResult } from "./useKid";
 
-function randomSequence(length: number) {
-  return Array.from({ length }, () => SEQUENCE_SHAPES[Math.floor(Math.random() * SEQUENCE_SHAPES.length)].id);
+function randomSequence(length: number, level: number) {
+  const shapes = sequenceShapesForLevel(level);
+  return Array.from({ length }, () => shapes[Math.floor(Math.random() * shapes.length)].id);
 }
 const shapeOf = (id: string) => SEQUENCE_SHAPES.find((s) => s.id === id)!;
 
@@ -29,8 +30,8 @@ export function SequenceGame({ patientId, level, length, soundOn }: Props) {
   // Sorteio feito só no navegador, para não divergir da renderização do servidor.
   const [rounds, setRounds] = useState<string[][]>([]);
   useEffect(() => {
-    setRounds(Array.from({ length: SEQUENCE_ROUNDS }, () => randomSequence(length)));
-  }, [length, seed]);
+    setRounds(Array.from({ length: SEQUENCE_ROUNDS }, () => randomSequence(length, level)));
+  }, [length, level, seed]);
   const [round, setRound] = useState(0);
   const [phase, setPhase] = useState<"look" | "build" | "check">("look");
   const [input, setInput] = useState<string[]>([]);
@@ -166,8 +167,8 @@ export function SequenceGame({ patientId, level, length, soundOn }: Props) {
             )}
             {phase === "build" && (
               <>
-                <div className="option-grid" style={{ maxWidth: 560, margin: "0 auto", gridTemplateColumns: "repeat(2, 1fr)" }}>
-                  {SEQUENCE_SHAPES.map((s) => (
+                <div className="option-grid" style={{ maxWidth: 560, margin: "0 auto", gridTemplateColumns: `repeat(${level >= 4 ? 3 : 2}, minmax(0, 1fr))` }}>
+                  {sequenceShapesForLevel(level).map((s) => (
                     <button key={s.id} className="option" onClick={() => tap(s.id)}>
                       <span className="emoji">{s.emoji}</span>
                       <span className="small">{s.label}</span>

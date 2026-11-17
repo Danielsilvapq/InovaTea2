@@ -1,7 +1,7 @@
 // Catálogo de atividades e conteúdo dos quizzes.
 // Linguagem literal, frases curtas e apoio visual (emoji) em todas as perguntas.
 
-export type ActivityType = "QUIZ" | "MEMORY" | "SEQUENCE" | "BREATHING" | "CHAT";
+export type ActivityType = "QUIZ" | "MEMORY" | "SEQUENCE" | "ODD" | "COUNT" | "SORT" | "ORDER" | "BREATHING" | "CHAT";
 
 export interface ActivityDef {
   key: string;
@@ -23,7 +23,7 @@ export const ACTIVITIES: ActivityDef[] = [
     description: "Descubra como as pessoas estão se sentindo.",
     skill: "Reconhecimento de emoções",
     color: "sky",
-    levels: 3,
+    levels: 5,
   },
   {
     key: "rotina",
@@ -33,7 +33,7 @@ export const ACTIVITIES: ActivityDef[] = [
     description: "O que vem antes e o que vem depois?",
     skill: "Rotina e sequência temporal",
     color: "sage",
-    levels: 3,
+    levels: 5,
   },
   {
     key: "social",
@@ -43,7 +43,7 @@ export const ACTIVITIES: ActivityDef[] = [
     description: "O que podemos fazer em cada situação?",
     skill: "Habilidades sociais",
     color: "lavender",
-    levels: 3,
+    levels: 5,
   },
   {
     key: "memoria",
@@ -53,7 +53,7 @@ export const ACTIVITIES: ActivityDef[] = [
     description: "Encontre os pares iguais.",
     skill: "Memória e atenção",
     color: "sand",
-    levels: 3,
+    levels: 5,
   },
   {
     key: "sequencia",
@@ -63,7 +63,47 @@ export const ACTIVITIES: ActivityDef[] = [
     description: "Observe e repita as formas na mesma ordem.",
     skill: "Atenção e memória de trabalho",
     color: "sky",
-    levels: 3,
+    levels: 5,
+  },
+  {
+    key: "diferente",
+    type: "ODD",
+    title: "Encontre o Diferente",
+    emoji: "🔍",
+    description: "Qual figura não é igual às outras?",
+    skill: "Atenção visual e discriminação",
+    color: "sand",
+    levels: 5,
+  },
+  {
+    key: "contar",
+    type: "COUNT",
+    title: "Vamos Contar",
+    emoji: "🔢",
+    description: "Conte as figuras e escolha o número.",
+    skill: "Números, contagem e cálculo",
+    color: "sky",
+    levels: 5,
+  },
+  {
+    key: "classificar",
+    type: "SORT",
+    title: "Separar e Organizar",
+    emoji: "🧺",
+    description: "Coloque cada figura no grupo certo.",
+    skill: "Categorização e flexibilidade",
+    color: "lavender",
+    levels: 5,
+  },
+  {
+    key: "passos",
+    type: "ORDER",
+    title: "Passo a Passo",
+    emoji: "🪜",
+    description: "Monte a ordem certa de cada tarefa.",
+    skill: "Sequência de ações e funções executivas",
+    color: "sage",
+    levels: 5,
   },
   {
     key: "respiracao",
@@ -73,7 +113,7 @@ export const ACTIVITIES: ActivityDef[] = [
     description: "Um momento calmo para respirar devagar.",
     skill: "Autorregulação emocional",
     color: "sage",
-    levels: 1,
+    levels: 3,
   },
   {
     key: "conversa",
@@ -526,15 +566,182 @@ export function getQuiz(key: string, level: number): QuizQuestion[] | null {
   return QUIZZES[key]?.[level] ?? null;
 }
 
+// ---------------------------------------------------------------------------
+// Níveis 4 e 5 dos quizzes: emoções mais complexas, rotina com tempo e
+// imprevistos, e linguagem social não literal (expressões e ironia).
+// ---------------------------------------------------------------------------
+const q = (prompt: string, visual: string, options: [string, string][], hint: string, answer = 0): QuizQuestion => ({
+  prompt,
+  visual,
+  options: options.map(([label, emoji]) => ({ label, emoji })),
+  answer,
+  hint,
+});
+
+Object.assign(QUIZZES.emocoes, {
+  4: [
+    q("Montei sozinho um quebra-cabeça difícil. Como eu me sinto?", "🧩", [["Orgulhoso", "🏅"], ["Envergonhado", "😳"], ["Entediado", "🥱"]], "Quando conseguimos algo difícil, sentimos orgulho."),
+    q("Tropecei na frente da turma e todos olharam. Como posso me sentir?", "🏫", [["Feliz", "😄"], ["Envergonhado", "😳"], ["Com fome", "🤤"]], "Sentir vergonha é normal. Esse sentimento passa.", 1),
+    q("Tentei várias vezes e o desenho não ficou como eu queria. Como me sinto?", "✏️", [["Animado", "🤩"], ["Com sono", "😴"], ["Frustrado", "😣"]], "Isso se chama frustração. Fazer uma pausa ajuda.", 2),
+    q("Abri a porta e meus amigos gritaram: Feliz aniversário! Como me sinto?", "🎉", [["Surpreso", "😮"], ["Triste", "😢"], ["Bravo", "😠"]], "Quando algo bom e inesperado acontece, ficamos surpresos."),
+  ],
+  5: [
+    q("Meu irmão ganhou um elogio e eu não. Sinto algo ruim no peito. O que pode ser?", "👦", [["Ciúme", "😒"], ["Alegria", "😄"], ["Sono", "😴"]], "Isso pode ser ciúme. Conversar com um adulto ajuda a entender."),
+    q("Estou muito nervoso antes da prova. O que posso fazer?", "📝", [["Rasgar a prova", "📄"], ["Respirar e lembrar que estudei", "🌬️"], ["Sair correndo", "🏃"]], "Respirar devagar acalma o corpo e ajuda a pensar.", 1),
+    q("Meu colega disse que tem medo do escuro. O que posso dizer?", "🌙", [["Isso é bobagem", "🙄"], ["Rir dele", "😂"], ["Eu entendo, às vezes também sinto medo", "🤝"]], "Mostrar que entendemos o outro se chama empatia.", 2),
+    q("Que sinais o corpo dá quando estou ficando bravo?", "🌡️", [["O coração acelera e fico quente", "❤️‍🔥"], ["Fico com fome", "🍔"], ["Fico com sono", "😴"]], "Quando notar esses sinais, é hora de fazer uma pausa."),
+  ],
+});
+
+Object.assign(QUIZZES.rotina, {
+  4: [
+    q("Quantos dias tem uma semana?", "📅", [["7 dias", "7️⃣"], ["3 dias", "3️⃣"], ["30 dias", "🔢"]], "A semana tem 7 dias: de domingo a sábado."),
+    q("Que dia vem depois de segunda-feira?", "🗓️", [["Domingo", "📕"], ["Terça-feira", "📗"], ["Sexta-feira", "📘"]], "Depois da segunda vem a terça-feira.", 1),
+    q("O relógio marca 8 horas da noite. O que costumamos fazer?", "🕗", [["Ir para a escola", "🏫"], ["Almoçar", "🍲"], ["Preparar para dormir", "🛏️"]], "À noite nos preparamos para dormir.", 2),
+    q("Vou ao médico amanhã. O que me ajuda a ficar tranquilo?", "🩺", [["Saber antes como vai ser", "🗺️"], ["Esconder e não falar", "🙈"], ["Ficar acordado a noite toda", "🌙"]], "Saber o que vai acontecer deixa tudo mais previsível."),
+  ],
+  5: [
+    q("O que eu preparo na noite antes da escola?", "🎒", [["Material e uniforme", "📚"], ["Brinquedos de praia", "🏖️"], ["Panela", "🍳"]], "Deixar tudo pronto à noite deixa a manhã mais calma."),
+    q("Me perdi no supermercado. O que eu faço?", "🛒", [["Saio sozinho para a rua", "🚶"], ["Procuro um funcionário de uniforme", "🧑‍💼"], ["Me escondo", "🙈"]], "Fique parado ou procure um funcionário para pedir ajuda.", 1),
+    q("Vou mudar de escola. O que pode ajudar?", "🏫", [["Não falar sobre isso", "🤐"], ["Ficar acordado a noite toda", "🌙"], ["Visitar a escola antes", "👀"]], "Conhecer o lugar antes ajuda a se acostumar.", 2),
+    q("Tenho tarefa e quero jogar videogame. Qual é a melhor ordem?", "🎮", [["Tarefa primeiro, depois o jogo", "✅"], ["Só o jogo", "🎮"], ["Nenhum dos dois", "🚫"]], "Primeiro a obrigação, depois a diversão."),
+  ],
+});
+
+Object.assign(QUIZZES.social, {
+  4: [
+    q("Meu amigo diz: 'Estou morrendo de fome!'. O que ele quer dizer?", "🍽️", [["Está com muita fome", "🤤"], ["Está doente", "🏥"], ["Não quer comer", "🙅"]], "É uma expressão. Quer dizer que a fome é grande."),
+    q("Alguém me pede para 'dar uma mãozinha'. O que é?", "✋", [["Entregar a minha mão", "🖐️"], ["Ajudar", "🤝"], ["Bater palmas", "👏"]], "'Dar uma mãozinha' quer dizer ajudar.", 1),
+    q("Meu colega disse que não gostou do meu desenho. O que posso fazer?", "🎨", [["Rasgar o desenho dele", "💢"], ["Nunca mais falar com ele", "🚫"], ["Respeitar a opinião dele", "🙂"]], "Cada pessoa pode ter um gosto diferente.", 2),
+    q("Estou conversando e a pessoa olha o relógio várias vezes. O que pode significar?", "⌚", [["Que ela precisa ir embora", "🚪"], ["Que ela ama relógios", "❤️"], ["Que quer conversar mais", "🗣️"]], "Olhar o relógio pode ser sinal de pressa. Podemos perguntar: 'Você precisa ir?'"),
+  ],
+  5: [
+    q("Quero falar com alguém que está ocupado. O que eu faço?", "📱", [["Espero e digo 'com licença'", "🙋"], ["Puxo o braço dele", "✊"], ["Grito o nome dele", "📢"]], "'Com licença' é a forma educada de chamar alguém ocupado."),
+    q("Um colega está sozinho no recreio. O que posso fazer?", "🧒", [["Rir dele", "😂"], ["Convidar para brincar", "🤝"], ["Fingir que não vi", "🙈"]], "Convidar alguém para brincar é uma atitude gentil.", 1),
+    q("Alguém derrubou suco e disse 'Que ótimo...' com cara séria. O que significa?", "🧃", [["Que adorou", "😄"], ["Que quer mais suco", "🥤"], ["Que não achou bom (ironia)", "🙃"]], "Às vezes as pessoas dizem o contrário do que sentem. Isso se chama ironia.", 2),
+    q("Prometi uma coisa e não consegui cumprir. O que eu faço?", "🤞", [["Explico e peço desculpas", "🙇"], ["Finjo que esqueci", "🤷"], ["Culpo outra pessoa", "👉"]], "Ser sincero e pedir desculpas mantém a confiança."),
+  ],
+});
+
 /** Símbolos usados no jogo da memória e na sequência. */
-export const MEMORY_SYMBOLS = ["🐶", "🐱", "🐢", "🐟", "🦋", "🐸", "🦉", "🐰", "🦁", "🐼"];
-export const MEMORY_PAIRS_BY_LEVEL: Record<number, number> = { 1: 3, 2: 4, 3: 6 };
+export const MEMORY_SYMBOLS = ["🐶", "🐱", "🐢", "🐟", "🦋", "🐸", "🦉", "🐰", "🦁", "🐼", "🐧", "🦒"];
+export const MEMORY_PAIRS_BY_LEVEL: Record<number, number> = { 1: 3, 2: 4, 3: 6, 4: 8, 5: 10 };
 
 export const SEQUENCE_SHAPES = [
   { id: "circulo", emoji: "🔵", label: "Círculo azul" },
   { id: "quadrado", emoji: "🟩", label: "Quadrado verde" },
   { id: "triangulo", emoji: "🔺", label: "Triângulo" },
   { id: "estrela", emoji: "⭐", label: "Estrela" },
+  { id: "coracao", emoji: "💜", label: "Coração roxo" },
+  { id: "lua", emoji: "🌙", label: "Lua" },
 ];
-export const SEQUENCE_LENGTH_BY_LEVEL: Record<number, number> = { 1: 3, 2: 4, 3: 5 };
+export const SEQUENCE_LENGTH_BY_LEVEL: Record<number, number> = { 1: 3, 2: 4, 3: 5, 4: 5, 5: 6 };
+/** Do nível 4 em diante, a sequência usa 6 formas em vez de 4. */
+export const sequenceShapesForLevel = (level: number) => SEQUENCE_SHAPES.slice(0, level >= 4 ? 6 : 4);
 export const SEQUENCE_ROUNDS = 4;
+
+/** Respiração: mais ciclos e expiração mais longa a cada nível. */
+export const BREATHING_BY_LEVEL: Record<number, { cycles: number; inhale: number; hold: number; exhale: number }> = {
+  1: { cycles: 3, inhale: 4, hold: 2, exhale: 5 },
+  2: { cycles: 5, inhale: 4, hold: 2, exhale: 5 },
+  3: { cycles: 7, inhale: 4, hold: 3, exhale: 6 },
+};
+
+/** Encontre o Diferente: pares [figura repetida, figura diferente], cada vez mais parecidos. */
+export const ODD_BY_LEVEL: Record<number, { cells: number; cols: number; pairs: [string, string][] }> = {
+  1: { cells: 4, cols: 2, pairs: [["🍎", "🚗"], ["🐶", "⭐"], ["🌞", "🍦"], ["🎈", "🐟"], ["🌳", "🚲"], ["🧸", "🍕"]] },
+  2: { cells: 6, cols: 3, pairs: [["🍎", "🍌"], ["🐶", "🐮"], ["🚗", "🚌"], ["⚽", "🏀"], ["🌹", "🌻"], ["🐟", "🐬"]] },
+  3: { cells: 9, cols: 3, pairs: [["🐶", "🐱"], ["🍊", "🍑"], ["🚗", "🚕"], ["🌲", "🌳"], ["🐸", "🐢"], ["🍪", "🍩"]] },
+  4: { cells: 12, cols: 4, pairs: [["🙂", "😊"], ["🐻", "🐨"], ["🍏", "🍐"], ["🐺", "🦊"], ["🚒", "🚑"], ["📗", "📘"]] },
+  5: { cells: 16, cols: 4, pairs: [["😀", "😄"], ["🐭", "🐹"], ["🕐", "🕒"], ["😐", "😑"], ["🌘", "🌗"], ["🔹", "🔷"]] },
+};
+export const ODD_ROUNDS = 5;
+
+/** Vamos Contar: o que cada nível pede. */
+export const COUNT_BY_LEVEL: Record<number, { kind: "count" | "add" | "sub"; min: number; max: number }> = {
+  1: { kind: "count", min: 1, max: 5 },
+  2: { kind: "count", min: 3, max: 10 },
+  3: { kind: "count", min: 8, max: 15 },
+  4: { kind: "add", min: 2, max: 10 },
+  5: { kind: "sub", min: 5, max: 12 },
+};
+export const COUNT_EMOJIS = ["🍎", "⭐", "🐟", "🎈", "🐞", "🌸", "🍪", "🚗"];
+export const COUNT_ROUNDS = 5;
+
+/** Separar e Organizar: grupos e figuras de cada nível. */
+export interface SortSet {
+  title: string;
+  categories: { label: string; emoji: string }[];
+  items: { emoji: string; label: string; category: number }[];
+}
+const items = (category: number, list: [string, string][]) => list.map(([emoji, label]) => ({ emoji, label, category }));
+export const SORT_BY_LEVEL: Record<number, SortSet> = {
+  1: {
+    title: "Frutas ou animais?",
+    categories: [{ label: "Frutas", emoji: "🍎" }, { label: "Animais", emoji: "🐶" }],
+    items: [...items(0, [["🍌", "Banana"], ["🍇", "Uva"], ["🍓", "Morango"]]), ...items(1, [["🐱", "Gato"], ["🐰", "Coelho"], ["🐮", "Vaca"]])],
+  },
+  2: {
+    title: "Roupa ou comida?",
+    categories: [{ label: "Roupas", emoji: "👕" }, { label: "Comidas", emoji: "🍽️" }],
+    items: [...items(0, [["👖", "Calça"], ["🧦", "Meia"], ["🧢", "Boné"], ["👗", "Vestido"]]), ...items(1, [["🍕", "Pizza"], ["🍞", "Pão"], ["🧀", "Queijo"], ["🥕", "Cenoura"]])],
+  },
+  3: {
+    title: "Onde cada um fica: céu, mar ou terra?",
+    categories: [{ label: "Céu", emoji: "☁️" }, { label: "Mar", emoji: "🌊" }, { label: "Terra", emoji: "🌳" }],
+    items: [...items(0, [["✈️", "Avião"], ["🐦", "Passarinho"], ["🎈", "Balão"]]), ...items(1, [["🐟", "Peixe"], ["🐙", "Polvo"], ["⛵", "Barco"]]), ...items(2, [["🐄", "Vaca"], ["🚗", "Carro"], ["🐿️", "Esquilo"]])],
+  },
+  4: {
+    title: "Em que lugar da casa ou da escola usamos?",
+    categories: [{ label: "Escola", emoji: "🏫" }, { label: "Cozinha", emoji: "🍳" }, { label: "Banheiro", emoji: "🛁" }],
+    items: [...items(0, [["✏️", "Lápis"], ["📚", "Livros"], ["🎒", "Mochila"], ["📏", "Régua"]]), ...items(1, [["🥄", "Colher"], ["🍳", "Frigideira"], ["🥣", "Tigela"], ["🫖", "Bule"]]), ...items(2, [["🪥", "Escova de dentes"], ["🧼", "Sabonete"], ["🧻", "Papel higiênico"], ["🚿", "Chuveiro"]])],
+  },
+  5: {
+    title: "Esse animal voa, nada ou anda?",
+    categories: [{ label: "Voa", emoji: "🕊️" }, { label: "Nada", emoji: "🐠" }, { label: "Anda", emoji: "🐾" }],
+    items: [...items(0, [["🦅", "Águia"], ["🦋", "Borboleta"], ["🦉", "Coruja"], ["🐝", "Abelha"]]), ...items(1, [["🐬", "Golfinho"], ["🦈", "Tubarão"], ["🐳", "Baleia"], ["🐡", "Baiacu"]]), ...items(2, [["🐘", "Elefante"], ["🦒", "Girafa"], ["🐕", "Cachorro"], ["🐎", "Cavalo"]])],
+  },
+};
+
+/** Passo a Passo: tarefas do dia a dia com a ordem certa dos passos. */
+export interface Routine {
+  title: string;
+  emoji: string;
+  steps: { emoji: string; label: string }[];
+}
+const r = (title: string, emoji: string, steps: [string, string][]): Routine => ({
+  title,
+  emoji,
+  steps: steps.map(([e, label]) => ({ emoji: e, label })),
+});
+export const ROUTINES_BY_SIZE: Record<number, Routine[]> = {
+  3: [
+    r("Escovar os dentes", "🪥", [["🪥", "Pegar a escova"], ["🧴", "Colocar a pasta"], ["😁", "Escovar os dentes"]]),
+    r("Lavar as mãos", "🧼", [["🚰", "Abrir a torneira"], ["🧼", "Passar sabão"], ["🧻", "Secar as mãos"]]),
+    r("Plantar uma flor", "🌱", [["🕳️", "Fazer um buraco"], ["🌱", "Colocar a semente"], ["💧", "Regar"]]),
+    r("Comer cereal", "🥣", [["🥣", "Pegar a tigela"], ["🌾", "Colocar o cereal"], ["🥛", "Colocar o leite"]]),
+    r("Calçar o tênis", "👟", [["🧦", "Colocar a meia"], ["👟", "Calçar o tênis"], ["🎀", "Amarrar o cadarço"]]),
+  ],
+  4: [
+    r("Tomar banho", "🚿", [["🚿", "Ligar o chuveiro"], ["🧴", "Lavar o cabelo"], ["🧼", "Ensaboar o corpo"], ["🧺", "Secar com a toalha"]]),
+    r("Fazer um sanduíche", "🥪", [["🍞", "Pegar o pão"], ["🧈", "Passar manteiga"], ["🧀", "Colocar o queijo"], ["🥪", "Fechar o sanduíche"]]),
+    r("Ir para a escola", "🏫", [["⏰", "Acordar"], ["👕", "Me vestir"], ["🥣", "Tomar café"], ["🎒", "Pegar a mochila"]]),
+    r("Hora de dormir", "🌙", [["🛁", "Tomar banho"], ["👕", "Vestir o pijama"], ["🪥", "Escovar os dentes"], ["🛏️", "Deitar na cama"]]),
+  ],
+  5: [
+    r("Atravessar a rua", "🚦", [["🛑", "Parar na calçada"], ["🤝", "Dar a mão ao adulto"], ["🚦", "Esperar o sinal verde"], ["👀", "Olhar para os dois lados"], ["🚶", "Atravessar na faixa"]]),
+    r("Fazer um bolo", "🎂", [["🥚", "Separar os ingredientes"], ["🥣", "Misturar tudo"], ["🍰", "Colocar na forma"], ["🔥", "Assar no forno"], ["🎂", "Esperar esfriar e comer"]]),
+    r("Lavar a louça", "🍽️", [["🍽️", "Juntar os pratos"], ["🚰", "Abrir a torneira"], ["🧽", "Ensaboar com a esponja"], ["💦", "Enxaguar"], ["🧺", "Secar e guardar"]]),
+    r("Escovar os dentes direitinho", "🪥", [["🪥", "Pegar a escova"], ["🧴", "Colocar a pasta"], ["😁", "Escovar os dentes"], ["💧", "Enxaguar a boca"], ["🧼", "Lavar a escova"]]),
+  ],
+};
+/** Tamanho das tarefas e número de rodadas em cada nível. */
+export const ORDER_BY_LEVEL: Record<number, { size: number; rounds: number }> = {
+  1: { size: 3, rounds: 3 },
+  2: { size: 3, rounds: 4 },
+  3: { size: 4, rounds: 3 },
+  4: { size: 4, rounds: 4 },
+  5: { size: 5, rounds: 3 },
+};
+
+export const LEVEL_EMOJIS = ["🌱", "🌿", "🌳", "⭐", "🚀"];

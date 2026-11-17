@@ -1,13 +1,14 @@
 import type { ActivitySession } from "@prisma/client";
-import { ACTIVITIES } from "./activities";
+import { ACTIVITIES, getActivity } from "./activities";
 import { MAX_ACTIVITY_LEVEL, UNLOCK_ACCURACY } from "./gamification";
 
 /** Maior nível liberado numa atividade (com base nas sessões concluídas). */
 export function unlockedLevel(sessions: Pick<ActivitySession, "activityKey" | "level" | "accuracy" | "completed">[], key: string) {
+  const max = Math.min(MAX_ACTIVITY_LEVEL, getActivity(key)?.levels ?? 1);
   let unlocked = 1;
   for (const s of sessions) {
     if (s.activityKey === key && s.completed && s.accuracy >= UNLOCK_ACCURACY) {
-      unlocked = Math.max(unlocked, Math.min(MAX_ACTIVITY_LEVEL, s.level + 1));
+      unlocked = Math.max(unlocked, Math.min(max, s.level + 1));
     }
   }
   return unlocked;

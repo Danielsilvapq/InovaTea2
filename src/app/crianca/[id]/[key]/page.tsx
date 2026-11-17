@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getKidPatient } from "@/lib/kid-access";
 import { db } from "@/lib/db";
-import { getActivity, getQuiz, MEMORY_PAIRS_BY_LEVEL, SEQUENCE_LENGTH_BY_LEVEL } from "@/lib/activities";
+import { getActivity, getQuiz, LEVEL_EMOJIS, MEMORY_PAIRS_BY_LEVEL, SEQUENCE_LENGTH_BY_LEVEL } from "@/lib/activities";
 import { unlockedLevel } from "@/lib/stats";
 import { UNLOCK_ACCURACY } from "@/lib/gamification";
 import { QuizGame } from "@/components/kid/QuizGame";
@@ -10,6 +10,10 @@ import { MemoryGame } from "@/components/kid/MemoryGame";
 import { SequenceGame } from "@/components/kid/SequenceGame";
 import { BreathingActivity } from "@/components/kid/BreathingActivity";
 import { ChatActivity } from "@/components/kid/ChatActivity";
+import { OddGame } from "@/components/kid/OddGame";
+import { CountGame } from "@/components/kid/CountGame";
+import { SortGame } from "@/components/kid/SortGame";
+import { OrderGame } from "@/components/kid/OrderGame";
 
 export default async function ActivityPage({
   params,
@@ -24,7 +28,6 @@ export default async function ActivityPage({
   const activity = getActivity(key);
   if (!patient || !activity) notFound();
 
-  if (activity.type === "BREATHING") return <BreathingActivity patientId={id} reduceMotion={patient.reduceMotion} />;
   if (activity.type === "CHAT") return <ChatActivity patientId={id} childName={patient.name.split(" ")[0]} />;
 
   const sessions = await db.activitySession.findMany({
@@ -45,7 +48,7 @@ export default async function ActivityPage({
           {Array.from({ length: activity.levels }, (_, i) => i + 1).map((l) =>
             l <= unlocked ? (
               <Link key={l} href={`/crianca/${id}/${key}?nivel=${l}`} className="option" style={{ textDecoration: "none" }}>
-                <span className="emoji">{["🌱", "🌿", "🌳"][l - 1]}</span>
+                <span className="emoji">{LEVEL_EMOJIS[l - 1]}</span>
                 Nível {l}
               </Link>
             ) : (
@@ -80,6 +83,13 @@ export default async function ActivityPage({
       />
     );
   }
+  if (activity.type === "BREATHING") {
+    return <BreathingActivity key={level} patientId={id} reduceMotion={patient.reduceMotion} level={level} />;
+  }
+  if (activity.type === "ODD") return <OddGame key={level} patientId={id} level={level} soundOn={patient.soundOn} />;
+  if (activity.type === "COUNT") return <CountGame key={level} patientId={id} level={level} soundOn={patient.soundOn} />;
+  if (activity.type === "SORT") return <SortGame key={level} patientId={id} level={level} soundOn={patient.soundOn} />;
+  if (activity.type === "ORDER") return <OrderGame key={level} patientId={id} level={level} soundOn={patient.soundOn} />;
   if (activity.type === "MEMORY") {
     return <MemoryGame key={level} patientId={id} level={level} pairs={MEMORY_PAIRS_BY_LEVEL[level]} soundOn={patient.soundOn} />;
   }
