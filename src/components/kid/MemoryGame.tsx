@@ -127,7 +127,7 @@ export function MemoryGame({ patientId, level, pairs, soundOn }: Props) {
         <p className="center" style={{ fontSize: "1.15rem" }}>
           Toque em duas cartas. Se forem iguais, elas ficam abertas. Jogadas: <strong>{moves}</strong>
         </p>
-        <div className="mem-grid">
+        <div className="mem-grid" style={{ ["--cols" as string]: pairs === 3 ? 3 : 4 }}>
           {deck.map((c, i) => {
             const isOpen = open.includes(i) || matched.has(i);
             return (

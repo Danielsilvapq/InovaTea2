@@ -19,7 +19,7 @@ interface Props {
 export function ActivityShell({ emoji, title, level, step, totalSteps, stepLabel = "Etapa", elapsedSec, onStop, children }: Props) {
   return (
     <div className="stack">
-      <div className="card stack">
+      <div className="card stack activity-progress">
         <div className="row between">
           <h1 style={{ margin: 0 }}>
             {emoji} {title}

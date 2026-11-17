@@ -14,12 +14,14 @@ export default async function KidLayout({ children, params }: { children: React.
     >
       <header className="kid-header">
         <div className="container">
-          <div className="avatar">{patient.avatar}</div>
-          <div style={{ minWidth: 0 }}>
-            <div style={{ fontWeight: 800, fontSize: "1.15rem" }}>Olá, {patient.name.split(" ")[0]}!</div>
+          <div className="avatar kid-avatar">{patient.avatar}</div>
+          <div className="kid-hello">Olá, {patient.name.split(" ")[0]}!</div>
+          <div className="kid-level">
             <LevelBar points={patient.totalPoints} />
           </div>
-          <HoldToExit href={`/paciente/${patient.id}`} />
+          <div className="kid-exit">
+            <HoldToExit href={`/paciente/${patient.id}`} />
+          </div>
         </div>
       </header>
       <main>
