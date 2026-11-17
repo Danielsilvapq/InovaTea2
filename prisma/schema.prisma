@@ -1,0 +1,135 @@
+// InovaTea - modelo de dados
+// SQLite para desenvolvimento local. Para produção, troque o provider para
+// "postgresql" e ajuste DATABASE_URL.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// Conta de acesso: responsável (GUARDIAN) ou profissional de saúde (PROFESSIONAL).
+model User {
+  id             String   @id @default(cuid())
+  name           String
+  email          String   @unique
+  passwordHash   String
+  role           String // "GUARDIAN" | "PROFESSIONAL"
+  phone          String?
+  // Campos do profissional
+  specialty      String? // ex.: Psicologia, Fonoaudiologia, Terapia Ocupacional, Neuropediatria
+  registryNumber String? // ex.: CRP, CRM, CREFITO, CRFa
+  institution    String?
+  // Campos do responsável
+  relationship   String? // ex.: Mãe, Pai, Avó, Tutor(a)
+  createdAt      DateTime @default(now())
+
+  children       Patient[]          @relation("GuardianChildren")
+  links          ProfessionalLink[]
+  evaluations    Evaluation[]
+  comments       Comment[]
+}
+
+/// Criança ou adolescente acompanhado na plataforma.
+model Patient {
+  id            String   @id @default(cuid())
+  name          String
+  birthDate     DateTime
+  avatar        String   @default("🦊")
+  supportLevel  Int? // Nível de suporte do TEA (1, 2 ou 3), opcional
+  interests     String? // Interesses especiais, usados para personalizar a conversa
+  notes         String?
+  accessCode    String   @unique // código para vincular profissionais
+  totalPoints   Int      @default(0)
+  // Preferências sensoriais
+  soundOn       Boolean  @default(false)
+  reduceMotion  Boolean  @default(true)
+  fontScale     Int      @default(100) // 100, 115, 130
+  createdAt     DateTime @default(now())
+
+  guardianId    String
+  guardian      User     @relation("GuardianChildren", fields: [guardianId], references: [id], onDelete: Cascade)
+
+  links         ProfessionalLink[]
+  sessions      ActivitySession[]
+  evaluations   Evaluation[]
+  comments      Comment[]
+}
+
+model ProfessionalLink {
+  id             String   @id @default(cuid())
+  professionalId String
+  patientId      String
+  createdAt      DateTime @default(now())
+  professional   User     @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  patient        Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@unique([professionalId, patientId])
+}
+
+/// Cada vez que a criança joga, responde um quiz ou conversa com o robô.
+model ActivitySession {
+  id           String    @id @default(cuid())
+  patientId    String
+  activityType String // "QUIZ" | "MEMORY" | "SEQUENCE" | "BREATHING" | "CHAT"
+  activityKey  String // ex.: "emocoes", "rotina", "memoria"
+  level        Int       @default(1)
+  correct      Int       @default(0)
+  wrong        Int       @default(0)
+  total        Int       @default(0)
+  accuracy     Float     @default(0) // 0..1
+  durationSec  Int       @default(0)
+  points       Int       @default(0)
+  completed    Boolean   @default(false)
+  mood         String? // como a criança disse que se sentiu ao final
+  details      String? // JSON com respostas, tempos por pergunta etc.
+  startedAt    DateTime  @default(now())
+  endedAt      DateTime?
+
+  patient      Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  messages     ChatMessage[]
+
+  @@index([patientId, startedAt])
+}
+
+model ChatMessage {
+  id        String          @id @default(cuid())
+  sessionId String
+  role      String // "user" | "assistant"
+  content   String
+  createdAt DateTime        @default(now())
+  session   ActivitySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+/// Avaliação estruturada feita por um profissional de saúde.
+model Evaluation {
+  id                  String   @id @default(cuid())
+  patientId           String
+  professionalId      String
+  communication       Int // 1..5
+  socialInteraction   Int
+  attention           Int
+  emotionalRegulation Int
+  autonomy            Int
+  summary             String
+  recommendations     String?
+  sharedWithGuardian  Boolean  @default(true)
+  createdAt           DateTime @default(now())
+
+  patient             Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  professional        User     @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+}
+
+/// Comentários/observações de profissionais e responsáveis no perfil.
+model Comment {
+  id        String   @id @default(cuid())
+  patientId String
+  authorId  String
+  content   String
+  createdAt DateTime @default(now())
+  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
