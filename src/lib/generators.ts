@@ -124,8 +124,9 @@ export interface CountRound {
   spoken: string; // versão para a voz, com o nome da figura
 }
 /** Nome de cada figura, para a narração ("Quantos carros você vê?"). */
-const COUNT_NAMES: Record<string, string> = {
-  "🍎": "maçãs", "⭐": "estrelas", "🐟": "peixes", "🎈": "balões", "🐞": "joaninhas", "🌸": "flores", "🍪": "biscoitos", "🚗": "carros",
+const COUNT_NAMES: Record<string, [string, "m" | "f"]> = {
+  "🍎": ["maçãs", "f"], "⭐": ["estrelas", "f"], "🐟": ["peixes", "m"], "🎈": ["balões", "m"],
+  "🐞": ["joaninhas", "f"], "🌸": ["flores", "f"], "🍪": ["biscoitos", "m"], "🚗": ["carros", "m"],
 };
 /** Mundo 1: contar até 5–10. Mundo 2: contar até 11–20. Mundo 3: somas. Mundo 4: subtrações. Mundo 5: misturado até 20. */
 export function countRounds(phase: number): CountRound[] {
@@ -135,24 +136,25 @@ export function countRounds(phase: number): CountRound[] {
   const emojis = shuffle(COUNT_EMOJIS);
   return Array.from({ length: rounds }, (_, i) => {
     const emoji = emojis[i % emojis.length];
-    const name = COUNT_NAMES[emoji] ?? "figuras";
+    const [name, gender] = COUNT_NAMES[emoji] ?? ["figuras", "f"];
+    const quantos = gender === "f" ? "Quantas" : "Quantos";
     const kind = world <= 2 ? "count" : world === 3 ? "add" : world === 4 ? "sub" : Math.random() < 0.5 ? "add" : "sub";
     if (kind === "count") {
       const max = world === 1 ? 4 + Math.ceil(step / 2) : 10 + step;
       const a = randInt(world === 1 ? 1 : 6, max);
-      return { kind, emoji, a, b: 0, answer: a, options: numberOptions(a), prompt: `Quantos ${emoji} você vê?`, spoken: `Quantos ${name} você vê?` };
+      return { kind, emoji, a, b: 0, answer: a, options: numberOptions(a), prompt: `Quantos ${emoji} você vê?`, spoken: `${quantos} ${name} você vê?` };
     }
     if (kind === "add") {
       const maxTotal = world === 3 ? 5 + step : 20;
       const total = randInt(3, maxTotal);
       const a = randInt(1, total - 1);
       const b = total - a;
-      return { kind, emoji, a, b, answer: total, options: numberOptions(total), prompt: `${a} mais ${b}. Quantos ${emoji} ao todo?`, spoken: `${a} ${name} mais ${b} ${name}. Quantos ${name} ao todo?` };
+      return { kind, emoji, a, b, answer: total, options: numberOptions(total), prompt: `${a} mais ${b}. Quantos ${emoji} ao todo?`, spoken: `${a} ${name} mais ${b} ${name}. ${quantos} ${name} ao todo?` };
     }
     const maxStart = world === 4 ? 6 + step : 20;
     const a = randInt(4, maxStart);
     const b = randInt(1, Math.min(world === 4 ? 3 + Math.floor(step / 3) : 9, a - 1));
-    return { kind, emoji, a, b, answer: a - b, options: numberOptions(a - b), prompt: `Tinha ${a} ${emoji}. ${b} foram embora. Quantos ficaram?`, spoken: `Tinha ${a} ${name}. ${b} foram embora. Quantos ${name} ficaram?` };
+    return { kind, emoji, a, b, answer: a - b, options: numberOptions(a - b), prompt: `Tinha ${a} ${emoji}. ${b} foram embora. Quantos ficaram?`, spoken: `Tinha ${a} ${name}. ${b} foram embora. ${quantos} ${name} ficaram?` };
   });
 }
 
