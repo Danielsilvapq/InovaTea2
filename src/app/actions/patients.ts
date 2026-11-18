@@ -21,6 +21,9 @@ const patientSchema = z.object({
   supportLevel: z.string().optional(),
   interests: z.string().trim().optional(),
   notes: z.string().trim().optional(),
+  communication: z.enum(["VERBAL", "LIMITED", "NONVERBAL"]).default("VERBAL"),
+  reading: z.enum(["INDEPENDENT", "SUPPORTED", "NONE"]).default("INDEPENDENT"),
+  answerSupport: z.enum(["INDEPENDENT", "SUPPORTED", "FULL"]).default("INDEPENDENT"),
 });
 
 export async function createPatient(_: FormState, formData: FormData): Promise<FormState> {
@@ -42,6 +45,11 @@ export async function createPatient(_: FormState, formData: FormData): Promise<F
       interests: d.interests || null,
       notes: d.notes || null,
       accessCode,
+      communication: d.communication,
+      reading: d.reading,
+      answerSupport: d.answerSupport,
+      narration: formData.get("narration") === "on",
+      bigTargets: formData.get("bigTargets") === "on",
     },
   });
   revalidatePath("/responsavel");
@@ -125,11 +133,29 @@ export async function addEvaluation(_: FormState, formData: FormData): Promise<F
 export async function updatePreferences(_: FormState, formData: FormData): Promise<FormState> {
   const patientId = String(formData.get("patientId"));
   const access = await getAccessiblePatient(patientId);
-  if (!access || !access.isGuardian) return { error: "Apenas o responsável pode alterar as preferências." };
+  if (!access) return { error: "Sem permissão." };
+  const pick = <T extends string>(v: FormDataEntryValue | null, allowed: T[], fallback: T) => (allowed.includes(String(v) as T) ? (String(v) as T) : fallback);
+  const p = access.patient;
+  const profile = {
+    supportLevel: formData.get("supportLevel") ? Number(formData.get("supportLevel")) : null,
+    communication: pick(formData.get("communication"), ["VERBAL", "LIMITED", "NONVERBAL"], p.communication as "VERBAL"),
+    reading: pick(formData.get("reading"), ["INDEPENDENT", "SUPPORTED", "NONE"], p.reading as "INDEPENDENT"),
+    answerSupport: pick(formData.get("answerSupport"), ["INDEPENDENT", "SUPPORTED", "FULL"], p.answerSupport as "INDEPENDENT"),
+    narration: formData.get("narration") === "on",
+    bigTargets: formData.get("bigTargets") === "on",
+  };
+  // O profissional vinculado ajusta só o perfil de comunicação; o responsável ajusta tudo.
+  if (!access.isGuardian) {
+    await db.patient.update({ where: { id: patientId }, data: profile });
+    revalidatePath(`/paciente/${patientId}`);
+    revalidatePath(`/crianca/${patientId}`);
+    return { ok: "Perfil de comunicação salvo." };
+  }
   const fontScale = Number(formData.get("fontScale"));
   await db.patient.update({
     where: { id: patientId },
     data: {
+      ...profile,
       soundOn: formData.get("soundOn") === "on",
       reduceMotion: formData.get("reduceMotion") === "on",
       fontScale: [100, 115, 130].includes(fontScale) ? fontScale : 100,

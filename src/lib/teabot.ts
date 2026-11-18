@@ -5,6 +5,7 @@ export interface TeaBotContext {
   childName: string;
   age: number;
   interests: string | null;
+  communication?: string;
 }
 
 function systemPrompt(ctx: TeaBotContext) {
@@ -12,7 +13,11 @@ function systemPrompt(ctx: TeaBotContext) {
     ctx.interests ? ` Os interesses favoritos de ${ctx.childName} são: ${ctx.interests}. Use esses temas para criar conexão quando fizer sentido.` : ""
   }
 
-Seu objetivo é praticar conversação de forma segura, previsível e acolhedora: fazer e responder perguntas, revezar a vez de falar, nomear emoções e falar sobre o dia a dia.
+${
+    ctx.communication && ctx.communication !== "VERBAL"
+      ? `${ctx.childName} ${ctx.communication === "NONVERBAL" ? "não usa a fala" : "fala pouco"} e conversa com você tocando em figuras de uma prancha de comunicação alternativa (CAA). As mensagens dela chegam como frases curtas montadas com figuras, como "Eu quero água" ou "Eu estou feliz". Responda com no máximo uma frase curta (até 10 palavras), com palavras simples e concretas. Quando fizer uma pergunta, ofereça opções que ela possa responder com uma figura, como "sim ou não" ou "brincar ou descansar". Se ela pedir algo do mundo real (água, banheiro, comer, ajuda, pausa), diga que vai ser importante mostrar essa frase para um adulto.\n\n`
+      : ""
+  }Seu objetivo é praticar conversação de forma segura, previsível e acolhedora: fazer e responder perguntas, revezar a vez de falar, nomear emoções e falar sobre o dia a dia.
 
 Como você fala:
 - Frases curtas e simples, adequadas à idade. No máximo 3 frases por resposta.
@@ -112,6 +117,19 @@ function scriptedReply(ctx: TeaBotContext, history: { role: string; content: str
   if (SAFETY.some((w) => last.includes(w))) {
     return "Obrigado por me contar. Isso é muito importante. Por favor, conte agora para um adulto de confiança, como seu responsável ou sua professora.";
   }
+  // Frases montadas na prancha de figuras (CAA)
+  const raw = (history.filter((m) => m.role === "user").at(-1)?.content ?? "").trim();
+  const want = last.match(/^eu (quero|preciso de|nao quero|gosto de) (.+)$/);
+  if (want) {
+    const what = raw.split(/\s+/).slice(want[1].split(" ").length + 1).join(" ") || want[2];
+    if (want[1] === "gosto de") return `Que legal, você gosta de ${what}! Eu também gosto. 😊`;
+    if (want[1] === "nao quero") return `Tudo bem, você não quer ${what}. Obrigado por me contar.`;
+    return `Entendi: você ${want[1] === "quero" ? "quer" : "precisa de"} ${what}. Mostre essa frase para um adulto. 👍`;
+  }
+  if (/^sim\b/.test(last)) return "Que bom! 😊 Você quer brincar ou descansar?";
+  if (/^nao\b/.test(last) && !last.includes("sei")) return "Tudo bem. Você prefere música ou história?";
+  if (/^nao sei/.test(last)) return "Tudo bem não saber. Você está feliz ou cansado?";
+  if (/^(pare|terminei)/.test(last)) return "Tudo bem. Podemos parar agora. Até logo! 👋";
   for (const [words, reply] of FEELINGS) {
     if (words.some((w) => last.split(/\W+/).includes(w))) return reply;
   }

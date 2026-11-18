@@ -1,7 +1,7 @@
 // Catálogo de atividades e conteúdo dos quizzes.
 // Linguagem literal, frases curtas e apoio visual (emoji) em todas as perguntas.
 
-export type ActivityType = "QUIZ" | "MEMORY" | "SEQUENCE" | "ODD" | "COUNT" | "SORT" | "ORDER" | "BREATHING" | "CHAT";
+export type ActivityType = "QUIZ" | "MEMORY" | "SEQUENCE" | "ODD" | "COUNT" | "SORT" | "ORDER" | "BREATHING" | "CHAT" | "AAC";
 
 export interface ActivityDef {
   key: string;
@@ -114,6 +114,16 @@ export const ACTIVITIES: ActivityDef[] = [
     skill: "Autorregulação emocional",
     color: "sage",
     levels: 10,
+  },
+  {
+    key: "minhavoz",
+    type: "AAC",
+    title: "Minha Voz",
+    emoji: "🗣️",
+    description: "Toque nas figuras e o aparelho fala por você.",
+    skill: "Comunicação alternativa (CAA)",
+    color: "sky",
+    levels: 1,
   },
   {
     key: "conversa",

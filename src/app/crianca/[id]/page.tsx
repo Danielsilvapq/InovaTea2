@@ -50,7 +50,10 @@ export default async function KidHome({ params }: { params: Promise<{ id: string
       </Link>
 
       <div className="grid grid-3">
-        {ACTIVITIES.map((a) => {
+        {[...ACTIVITIES]
+          // Para quem fala pouco ou não fala, a Minha Voz vem primeiro.
+          .sort((x, y) => (patient.communication !== "VERBAL" ? Number(y.type === "AAC") - Number(x.type === "AAC") : 0))
+          .map((a) => {
           const level = unlockedLevel(sessions, a.key);
           const count = sessions.filter((s) => s.activityKey === a.key).length;
           return (

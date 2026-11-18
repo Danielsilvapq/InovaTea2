@@ -257,6 +257,29 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--p
   .sort-bin { min-height: 0; }
 }
 
+/* Acessibilidade: voz, destaque de apoio e alvos grandes */
+.speak-btn { width: 52px; height: 52px; flex: none; border-radius: 50%; border: 2px solid var(--line); background: var(--surface); font-size: 1.5rem; cursor: pointer; display: inline-grid; place-items: center; }
+.speak-btn:hover { border-color: var(--primary); }
+.prompt-row { display: flex; gap: 12px; align-items: center; justify-content: center; }
+.option.hint-glow, .odd-cell.hint-glow { border-color: var(--primary); box-shadow: 0 0 0 6px var(--primary-soft); animation: hintPulse 2.4s ease-in-out infinite; }
+@keyframes hintPulse { 0%, 100% { box-shadow: 0 0 0 4px var(--primary-soft); } 50% { box-shadow: 0 0 0 10px var(--primary-soft); } }
+.big-targets .option { min-height: 170px; font-size: 1.3rem; }
+.big-targets .option .emoji { font-size: 3.4rem; }
+.big-targets .btn { min-height: 60px; font-size: 1.1rem; }
+.big-targets .mem-card, .big-targets .odd-cell { font-size: 3rem; }
+.big-targets .speak-btn { width: 64px; height: 64px; font-size: 1.9rem; }
+
+/* Minha Voz (CAA) */
+.aac-strip { display: flex; gap: 10px; align-items: center; min-height: 96px; padding: 12px; border-radius: 18px; border: 3px solid var(--primary); background: var(--surface); flex-wrap: wrap; }
+.aac-chip { display: grid; justify-items: center; padding: 6px 10px; border-radius: 14px; background: var(--primary-soft); font-weight: 700; }
+.aac-chip span { font-size: 2rem; line-height: 1.1; }
+.aac-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.aac-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 120px), 1fr)); }
+.aac-card { display: grid; justify-items: center; gap: 4px; padding: 12px 8px; border-radius: 18px; border: 3px solid var(--line); background: var(--surface); font: inherit; font-weight: 700; cursor: pointer; color: var(--ink); min-height: 112px; align-content: center; }
+.aac-card .emoji { font-size: 2.6rem; line-height: 1; }
+.aac-card:hover { border-color: var(--primary); }
+.aac-card.starter { background: var(--lavender-soft); }
+
 /* Mapa de fases */
 .world { display: grid; gap: 10px; padding: 14px; border-radius: 18px; background: var(--surface-2); }
 .world.locked { opacity: 0.7; border: 2px dashed var(--line); background: transparent; }

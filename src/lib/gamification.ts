@@ -47,6 +47,9 @@ export function computePoints(input: {
   completed: boolean;
   messages?: number;
 }) {
+  if (input.activityType === "AAC") {
+    return Math.min(30, input.total * 6);
+  }
   if (input.activityType === "CHAT") {
     return Math.min(60, (input.messages ?? 0) * 6);
   }

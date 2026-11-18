@@ -7,6 +7,8 @@ import { ProgressBar } from "@/components/ProgressBar";
 import { MOODS_LIST } from "./moods";
 import { saveMood, type SaveResult, formatClock } from "./useKid";
 import { feedbackMessage } from "@/lib/gamification";
+import { useEffect } from "react";
+import { SpeakButton, useSpeech } from "./KidSettings";
 
 interface Props {
   patientId: string;
@@ -23,6 +25,16 @@ export function ResultScreen({ patientId, result, correct, total, durationSec, c
   const router = useRouter();
   const [mood, setMood] = useState<string | null>(null);
   const accuracy = total ? (correct ?? 0) / total : null;
+  const { auto } = useSpeech();
+  const text = message ?? (accuracy !== null ? feedbackMessage(accuracy) : "Obrigado por participar!");
+  const earnedText = [
+    ...(result?.earned?.goals ?? []).map((g) => `Meta cumprida: ${g.title}.`),
+    ...(result?.earned?.achievements ?? []).map((a) => `Nova conquista: ${a.title}.`),
+  ].join(" ");
+  useEffect(() => {
+    auto(`${completed ? "Você terminou!" : "Pausa feita."} ${text} ${earnedText} Como você está se sentindo agora?`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function pickMood(m: string) {
     setMood(m);
@@ -34,9 +46,10 @@ export function ResultScreen({ patientId, result, correct, total, durationSec, c
     <div className="card stack center" style={{ maxWidth: 680, margin: "0 auto" }}>
       <div style={{ fontSize: "4rem" }}>{completed ? "🎉" : "👍"}</div>
       <h1>{completed ? "Você terminou!" : "Pausa feita."}</h1>
-      <p style={{ fontSize: "1.15rem" }}>
-        {message ?? (accuracy !== null ? feedbackMessage(accuracy) : "Obrigado por participar!")}
-      </p>
+      <div className="prompt-row">
+        <p style={{ fontSize: "1.15rem", margin: 0 }}>{text}</p>
+        <SpeakButton text={`${text} ${earnedText}`} />
+      </div>
 
       {accuracy !== null && (
         <ProgressBar value={accuracy} label="Acertos" rightLabel={`${correct} de ${total}`} />

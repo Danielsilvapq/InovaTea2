@@ -36,7 +36,7 @@ const dayKey = (d: Date) => d.toISOString().slice(0, 10);
 export function buildStats(sessions: ActivitySession[]) {
   const sorted = [...sessions].sort((a, b) => +a.startedAt - +b.startedAt);
   // Conversas não têm acerto/erro: ficam fora das médias de acerto.
-  const isScored = (s: ActivitySession) => s.total > 0 && s.activityType !== "CHAT";
+  const isScored = (s: ActivitySession) => s.total > 0 && s.activityType !== "CHAT" && s.activityType !== "AAC";
   const scored = sorted.filter(isScored);
   const totalSec = sorted.reduce((acc, s) => acc + s.durationSec, 0);
   const avgAccuracy = scored.length ? scored.reduce((a, s) => a + s.accuracy, 0) / scored.length : 0;

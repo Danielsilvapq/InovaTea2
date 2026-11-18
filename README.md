@@ -30,6 +30,16 @@ registros de evolução, que podem ser acompanhados por **responsáveis** e **pr
 - Comentários no perfil e acesso a todo o histórico de sessões.
 - **Metas personalizadas** para cada paciente (terminar uma atividade N vezes, fazer em N dias diferentes, atingir um acerto mínimo ou chegar a um nível), com prazo opcional e recado para a criança. A meta aparece na trilha de conquistas da criança.
 
+## Para todos os graus do TEA
+Cada criança tem um **perfil de comunicação**, preenchido pelo responsável ou pelo profissional. Ao informar o nível de suporte, o sistema sugere as opções:
+- **Como se comunica:** verbal, pouca fala ou não verbal.
+- **Leitura:** lê sozinho, lê com apoio ou ainda não lê.
+- **Apoio nas respostas:** independente (3 opções), com apoio (2 opções e pode tentar de novo) ou apoio total (também destaca a resposta certa após alguns segundos — aprendizagem sem erro). Na evolução, conta como acerto só o que foi certo na primeira tentativa.
+- **Narração automática:** perguntas, opções, instruções, respiração e resultados lidos em voz alta, com o botão 🔊 em todas as telas.
+- **Botões grandes e mais tempo** para dificuldades motoras ou de atenção.
+
+**Minha Voz** é uma prancha de comunicação alternativa (CAA): a criança toca em figuras ("Eu quero" + "água"), o aparelho fala a frase e ela fica registrada para os adultos. O **TeaBot** também conversa por figuras e responde com frases curtas para quem fala pouco ou não fala.
+
 ## Ambiente adaptado ao TEA
 - Paleta suave e pouco saturada (azul calmo, verde sálvia, lavanda, areia), com modo escuro.
 - O erro aparece em âmbar suave e com mensagem acolhedora ("Quase! …"), nunca em vermelho intenso.

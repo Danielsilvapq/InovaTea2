@@ -5,6 +5,7 @@ import { breathingConfig } from "@/lib/generators";
 import { useRouter } from "next/navigation";
 import { ActivityShell } from "./ActivityShell";
 import { ResultScreen } from "./ResultScreen";
+import { useSpeech } from "./KidSettings";
 import { saveSession, useElapsed, type SaveResult } from "./useKid";
 
 export function BreathingActivity({ patientId, reduceMotion, level }: { patientId: string; reduceMotion: boolean; level: number }) {
@@ -22,6 +23,7 @@ export function BreathingActivity({ patientId, reduceMotion, level }: { patientI
   const [count, setCount] = useState<number>(PHASES[0].seconds);
   const [done, setDone] = useState<{ result: SaveResult | null; completed: boolean; duration: number } | null>(null);
   const timer = useElapsed(!done);
+  const { auto } = useSpeech();
   const phase = PHASES[phaseIdx];
 
   useEffect(() => {
@@ -46,6 +48,11 @@ export function BreathingActivity({ patientId, reduceMotion, level }: { patientI
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [started, count, phaseIdx, cycle, done]);
+
+  useEffect(() => {
+    if (started && !done) auto(PHASES[phaseIdx].label);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [started, phaseIdx, cycle]);
 
   async function finish(completed: boolean, cycles = cycle) {
     const duration = timer.read();

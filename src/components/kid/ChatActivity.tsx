@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { ActivityShell } from "./ActivityShell";
 import { ResultScreen } from "./ResultScreen";
 import { useElapsed, type SaveResult } from "./useKid";
+import { AacBoard } from "./AacBoard";
+import { SpeakButton, useKidSettings, useSpeech } from "./KidSettings";
 
 const GOAL = 8; // meta de mensagens da criança por conversa
 const QUICK = ["Estou feliz 😄", "Estou cansado 🥱", "Quero falar do meu dia", "Me conta uma curiosidade", "Tchau 👋"];
@@ -25,6 +27,10 @@ export function ChatActivity({ patientId, childName }: { patientId: string; chil
   const timer = useElapsed(!done && !!sessionId);
   const listRef = useRef<HTMLDivElement>(null);
   const started = useRef(false);
+  const { communication, reading } = useKidSettings();
+  const { auto } = useSpeech();
+  // Quem fala pouco, não fala ou ainda não lê começa conversando por figuras.
+  const [mode, setMode] = useState<"figuras" | "teclado">(communication !== "VERBAL" || reading === "NONE" ? "figuras" : "teclado");
 
   async function start() {
     setError(null);
@@ -40,6 +46,7 @@ export function ChatActivity({ patientId, childName }: { patientId: string; chil
     const data = await res.json();
     setSessionId(data.sessionId);
     setMessages([{ role: "assistant", content: data.reply }]);
+    auto(data.reply);
     timer.reset();
   }
 
@@ -67,7 +74,9 @@ export function ChatActivity({ patientId, childName }: { patientId: string; chil
         body: JSON.stringify({ action: "message", sessionId, text: clean }),
       });
       const data = await res.json();
-      setMessages((m) => [...m, { role: "assistant", content: data.reply ?? "Desculpe, não entendi. Pode repetir?" }]);
+      const reply = data.reply ?? "Desculpe, não entendi. Pode repetir?";
+      setMessages((m) => [...m, { role: "assistant", content: reply }]);
+      auto(reply);
     } catch {
       setMessages((m) => [...m, { role: "assistant", content: "Desculpe, tive um probleminha. Pode repetir?" }]);
     } finally {
@@ -137,41 +146,48 @@ export function ChatActivity({ patientId, childName }: { patientId: string; chil
             <div key={i} className={`bubble ${m.role === "assistant" ? "bot" : "me"}`}>
               {m.role === "assistant" && <strong>🤖 TeaBot: </strong>}
               {m.content}
+              {m.role === "assistant" && <> <SpeakButton text={m.content} label="Ouvir o TeaBot" /></>}
             </div>
           ))}
           {sending && <div className="bubble bot muted">🤖 TeaBot está pensando...</div>}
         </div>
-        <div className="row">
-          {QUICK.map((q) => (
-            <button key={q} className="btn btn-secondary" onClick={() => send(q)} disabled={sending || !sessionId}>
-              {q}
-            </button>
-          ))}
-        </div>
-        <form
-          className="row"
-          style={{ flexWrap: "nowrap" }}
-          onSubmit={(e) => {
-            e.preventDefault();
-            send(text);
-          }}
-        >
-          <label htmlFor="msg" style={{ position: "absolute", left: -9999 }}>
-            Sua mensagem
-          </label>
-          <input
-            id="msg"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Escreva aqui..."
-            maxLength={500}
-            autoComplete="off"
-            style={{ fontSize: "1.1rem" }}
-          />
-          <button className="btn btn-lg" disabled={sending || !text.trim() || !sessionId}>
-            Enviar
+        <div className="row" role="group" aria-label="Como conversar">
+          <button className={`btn ${mode === "figuras" ? "" : "btn-secondary"}`} onClick={() => setMode("figuras")} aria-pressed={mode === "figuras"}>
+            🖼️ Figuras
           </button>
-        </form>
+          <button className={`btn ${mode === "teclado" ? "" : "btn-secondary"}`} onClick={() => setMode("teclado")} aria-pressed={mode === "teclado"}>
+            ⌨️ Escrever
+          </button>
+        </div>
+        {mode === "figuras" ? (
+          <AacBoard onSay={(sentence) => send(sentence)} sayLabel="📨 Enviar para o TeaBot" />
+        ) : (
+          <>
+            <div className="row">
+              {QUICK.map((q) => (
+                <button key={q} className="btn btn-secondary" onClick={() => send(q)} disabled={sending || !sessionId}>
+                  {q}
+                </button>
+              ))}
+            </div>
+            <form
+              className="row"
+              style={{ flexWrap: "nowrap" }}
+              onSubmit={(e) => {
+                e.preventDefault();
+                send(text);
+              }}
+            >
+              <label htmlFor="msg" style={{ position: "absolute", left: -9999 }}>
+                Sua mensagem
+              </label>
+              <input id="msg" value={text} onChange={(e) => setText(e.target.value)} placeholder="Escreva aqui..." maxLength={500} autoComplete="off" style={{ fontSize: "1.1rem", minWidth: 0 }} />
+              <button className="btn btn-lg" disabled={sending || !text.trim() || !sessionId}>
+                Enviar
+              </button>
+            </form>
+          </>
+        )}
         {sent >= GOAL && <div className="ok-box">🎯 Você alcançou a meta de conversa! Pode continuar ou terminar.</div>}
         <button className="btn btn-sage" onClick={finish} disabled={!sessionId}>
           ✅ Terminar conversa

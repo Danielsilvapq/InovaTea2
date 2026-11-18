@@ -22,7 +22,7 @@ export default async function SessaoPage({ params }: { params: Promise<{ id: str
   });
   if (!s) notFound();
   const a = getActivity(s.activityKey);
-  let details: { answers?: AnswerDetail[]; moves?: number; [k: string]: unknown } = {};
+  let details: { answers?: AnswerDetail[]; moves?: number; phrases?: { text: string; at: string }[]; [k: string]: unknown } = {};
   try {
     details = s.details ? JSON.parse(s.details) : {};
   } catch {}
@@ -78,6 +78,20 @@ export default async function SessaoPage({ params }: { params: Promise<{ id: str
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {details.phrases && details.phrases.length > 0 && (
+        <div className="card">
+          <h2>Frases da Minha Voz</h2>
+          <ul>
+            {details.phrases.map((p, i) => (
+              <li key={i}>
+                <strong>{p.text}</strong>{" "}
+                <span className="small muted">{new Date(p.at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 

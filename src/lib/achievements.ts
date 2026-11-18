@@ -56,6 +56,7 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   { id: "cal-2", track: "calma", emoji: "🍃", title: "Respiro de 3 dias", goal: "Terminar a respiração em 3 dias diferentes", measure: { kind: "days", filter: done("respiracao"), target: 3 } },
   { id: "cal-3", track: "calma", emoji: "🎈", title: "Balão tranquilo", goal: "Terminar a fase 10 da respiração", measure: once(done("respiracao", 10)) },
 
+  { id: "soc-0", track: "social", emoji: "🗣️", title: "Minha voz", goal: "Falar 5 frases na Minha Voz", measure: once((s) => s.activityKey === "minhavoz" && s.total >= 5) },
   { id: "soc-1", track: "social", emoji: "💬", title: "Bom papo", goal: "Mandar 5 mensagens ao TeaBot numa conversa", measure: once((s) => s.activityKey === "conversa" && s.total >= 5) },
   { id: "soc-2", track: "social", emoji: "🤝", title: "Amigo gentil", goal: "Passar da fase 20 das Situações do Dia a Dia", measure: once(done("social", 20, PASS)) },
   { id: "soc-3", track: "social", emoji: "🗝️", title: "Entendo expressões", goal: "Passar da fase 50 das Situações do Dia a Dia", measure: once(done("social", 50, PASS)) },

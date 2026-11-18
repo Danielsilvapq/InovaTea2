@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { orderRounds, type OrderRound } from "@/lib/generators";
 import { ActivityShell } from "./ActivityShell";
 import { ResultScreen } from "./ResultScreen";
+import { SpeakButton, useSpeech } from "./KidSettings";
 import { saveSession, useElapsed, useSoftSound, type SaveResult } from "./useKid";
 
 type Answer = { question: string; chosen: string; correct: boolean; timeMs: number };
@@ -26,11 +27,18 @@ export function OrderGame({ patientId, level, soundOn }: { patientId: string; le
   const r = rounds[round];
   const totalRounds = rounds.length || 1;
   const isCorrect = checked && picked.every((v, i) => v === i);
+  const { auto } = useSpeech();
+  const spoken = r ? `${r.routine.title}. Toque nos passos na ordem em que fazemos: ${r.shuffled.map((i) => r.routine.steps[i].label).join(". ")}.` : "";
+  useEffect(() => {
+    if (spoken && !done) auto(spoken);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [spoken, done]);
 
   function pick(stepIndex: number) {
     if (!r || checked || picked.includes(stepIndex)) return;
     const next = [...picked, stepIndex];
     setPicked(next);
+    auto(r.routine.steps[stepIndex].label);
     if (next.length === r.routine.steps.length) {
       const ok = next.every((v, i) => v === i);
       play(ok ? "ok" : "try");
@@ -88,9 +96,12 @@ export function OrderGame({ patientId, level, soundOn }: { patientId: string; le
       stepLabel="Tarefa" elapsedSec={timer.sec} onStop={() => finish(false)}>
       {r && (
         <div className="card stack">
-          <h2 className="center">
-            {r.routine.emoji} {r.routine.title}
-          </h2>
+          <div className="prompt-row">
+            <h2 className="center" style={{ margin: 0 }}>
+              {r.routine.emoji} {r.routine.title}
+            </h2>
+            <SpeakButton text={spoken} />
+          </div>
           <p className="center">
             {checked ? (isCorrect ? "✅ Ordem certa!" : "💛 Quase! Veja a ordem certa abaixo.") : "Toque nos passos na ordem em que fazemos."}
           </p>

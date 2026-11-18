@@ -2,6 +2,7 @@ import { requireUser } from "@/lib/auth";
 import { createPatient } from "@/app/actions/patients";
 import { ActionForm } from "@/components/ActionForm";
 import { AvatarPicker } from "@/components/AvatarPicker";
+import { CommunicationFields } from "@/components/CommunicationFields";
 
 export default async function NovaCrianca() {
   await requireUser("GUARDIAN");
@@ -17,21 +18,11 @@ export default async function NovaCrianca() {
           <label htmlFor="name">Nome ou apelido</label>
           <input id="name" name="name" required />
         </div>
-        <div className="grid grid-2">
-          <div className="field">
-            <label htmlFor="birthDate">Data de nascimento</label>
-            <input id="birthDate" name="birthDate" type="date" required />
-          </div>
-          <div className="field">
-            <label htmlFor="supportLevel">Nível de suporte (opcional)</label>
-            <select id="supportLevel" name="supportLevel" defaultValue="">
-              <option value="">Prefiro não informar</option>
-              <option value="1">Nível 1</option>
-              <option value="2">Nível 2</option>
-              <option value="3">Nível 3</option>
-            </select>
-          </div>
+        <div className="field">
+          <label htmlFor="birthDate">Data de nascimento</label>
+          <input id="birthDate" name="birthDate" type="date" required />
         </div>
+        <CommunicationFields withSupportLevel />
         <AvatarPicker />
         <div className="field">
           <label htmlFor="interests">

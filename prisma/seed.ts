@@ -43,6 +43,39 @@ async function main() {
   });
   await db.professionalLink.create({ data: { professionalId: pro.id, patientId: child.id } });
 
+  // Segunda criança: não verbal, nível 3 de suporte, ainda não lê.
+  const bia = await db.patient.create({
+    data: {
+      guardianId: guardian.id,
+      name: "Bia",
+      birthDate: new Date("2019-03-02"),
+      avatar: "🐢",
+      supportLevel: 3,
+      interests: "música, água",
+      notes: "Não verbal. Usa figuras para pedir coisas. Fica calma com música baixa.",
+      accessCode: "BIA123",
+      communication: "NONVERBAL",
+      reading: "NONE",
+      answerSupport: "FULL",
+      narration: true,
+      bigTargets: true,
+    },
+  });
+  await db.professionalLink.create({ data: { professionalId: pro.id, patientId: bia.id } });
+  const biaDay = new Date(Date.now() - 2 * 864e5);
+  await db.activitySession.create({
+    data: {
+      patientId: bia.id, activityType: "AAC", activityKey: "minhavoz", level: 1, correct: 3, total: 3, accuracy: 1,
+      durationSec: 180, points: 18, completed: true, mood: "calmo", startedAt: biaDay, endedAt: new Date(+biaDay + 180000),
+      details: JSON.stringify({ phrases: [
+        { text: "Eu quero música", at: biaDay.toISOString() },
+        { text: "Eu estou feliz", at: new Date(+biaDay + 60000).toISOString() },
+        { text: "Eu preciso de água", at: new Date(+biaDay + 120000).toISOString() },
+      ] }),
+    },
+  });
+  await db.patient.update({ where: { id: bia.id }, data: { totalPoints: 18 } });
+
   // Sessões dos últimos 12 dias, com melhora gradual
   const plan: [string, string, number][] = [
     ["QUIZ", "emocoes", 1], ["MEMORY", "memoria", 1], ["QUIZ", "rotina", 1], ["BREATHING", "respiracao", 1],
@@ -103,6 +136,7 @@ async function main() {
   console.log("Seed concluído.");
   console.log("Responsável: responsavel@inovatea.app / inovatea123");
   console.log("Profissional: profissional@inovatea.app / inovatea123");
+  console.log("Crianças: Lucas (verbal, nível 1) e Bia (não verbal, nível 3)");
 }
 
 main().finally(() => db.$disconnect());

@@ -8,6 +8,7 @@ import { sequenceConfig } from "@/lib/generators";
 const sequenceShapesForLevel = (level: number) => sequenceConfig(level).shapes;
 import { ActivityShell } from "./ActivityShell";
 import { ResultScreen } from "./ResultScreen";
+import { SpeakButton, useSpeech } from "./KidSettings";
 import { saveSession, useElapsed, useSoftSound, type SaveResult } from "./useKid";
 
 function randomSequence(length: number, level: number) {
@@ -45,6 +46,12 @@ export function SequenceGame({ patientId, level, length, soundOn }: Props) {
   const play = useSoftSound(soundOn);
 
   const target = rounds[round] ?? [];
+  const { auto } = useSpeech();
+  useEffect(() => {
+    if (done || !target.length) return;
+    auto(phase === "look" ? "Olhe com calma e memorize a ordem." : phase === "build" ? "Agora monte a mesma ordem." : "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, round, rounds, done]);
   const isCorrect = phase === "check" && input.join() === target.join();
 
   function tap(id: string) {
@@ -135,7 +142,10 @@ export function SequenceGame({ patientId, level, length, soundOn }: Props) {
       <div className="card stack center">
         {phase === "look" && (
           <>
-            <h2>Olhe com calma e memorize a ordem:</h2>
+            <div className="prompt-row">
+              <h2 style={{ margin: 0 }}>Olhe com calma e memorize a ordem:</h2>
+              <SpeakButton text={`Olhe com calma e memorize a ordem: ${target.map((id) => shapeOf(id).label).join(", ")}.`} />
+            </div>
             <div className="seq-display">
               {target.map((id, i) => (
                 <div key={i} className="seq-slot filled" aria-label={shapeOf(id).label}>

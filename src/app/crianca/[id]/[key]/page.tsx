@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { getActivity } from "@/lib/activities";
 import { memoryPairs, quizRound, sequenceConfig } from "@/lib/generators";
 import { PhaseMap } from "@/components/kid/PhaseMap";
+import { AacActivity } from "@/components/kid/AacActivity";
 import { unlockedLevel } from "@/lib/stats";
 import { UNLOCK_ACCURACY } from "@/lib/gamification";
 import { QuizGame } from "@/components/kid/QuizGame";
@@ -30,6 +31,7 @@ export default async function ActivityPage({
   const activity = getActivity(key);
   if (!patient || !activity) notFound();
 
+  if (activity.type === "AAC") return <AacActivity patientId={id} />;
   if (activity.type === "CHAT") return <ChatActivity patientId={id} childName={patient.name.split(" ")[0]} />;
 
   const sessions = await db.activitySession.findMany({

@@ -49,6 +49,12 @@ model Patient {
   soundOn       Boolean  @default(false)
   reduceMotion  Boolean  @default(true)
   fontScale     Int      @default(100) // 100, 115, 130
+  // Perfil de comunicação e acessibilidade (atende todos os graus do TEA)
+  communication String   @default("VERBAL") // "VERBAL" | "LIMITED" | "NONVERBAL"
+  reading       String   @default("INDEPENDENT") // "INDEPENDENT" | "SUPPORTED" | "NONE"
+  answerSupport String   @default("INDEPENDENT") // "INDEPENDENT" | "SUPPORTED" | "FULL"
+  narration     Boolean  @default(false) // ler perguntas e instruções em voz alta
+  bigTargets    Boolean  @default(false) // botões maiores e mais tempo
   createdAt     DateTime @default(now())
 
   guardianId    String

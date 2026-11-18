@@ -10,6 +10,7 @@ import { LineChart, BarChart } from "@/components/Charts";
 import { ActionForm } from "@/components/ActionForm";
 import { addComment, toggleGoal, unlinkProfessional } from "@/app/actions/patients";
 import { achievementStates, goalStates } from "@/lib/achievements";
+import { communicationLabel, readingLabel, supportLabel } from "@/lib/accessibility";
 
 const EVAL_FIELDS = [
   ["communication", "Comunicação"],
@@ -80,6 +81,13 @@ export default async function PacientePage({ params }: { params: Promise<{ id: s
                 {patient.guardian.relationship ? ` (${patient.guardian.relationship})` : ""}
               </div>
               {patient.interests && <div className="small">⭐ Interesses: {patient.interests}</div>}
+              <div className="row small" style={{ gap: 6, marginTop: 6 }}>
+                <span className="badge">🗣️ {communicationLabel(patient.communication)}</span>
+                <span className="badge">📖 {readingLabel(patient.reading)}</span>
+                <span className="badge">🤝 Apoio: {supportLabel(patient.answerSupport)}</span>
+                {patient.narration && <span className="badge">🔊 Narração</span>}
+                {patient.bigTargets && <span className="badge">👆 Botões grandes</span>}
+              </div>
             </div>
           </div>
           <div className="row">
@@ -94,9 +102,14 @@ export default async function PacientePage({ params }: { params: Promise<{ id: s
               </>
             )}
             {isProfessional && (
-              <Link href={`/paciente/${patient.id}/avaliar`} className="btn">
-                + Nova avaliação
-              </Link>
+              <>
+                <Link href={`/paciente/${patient.id}/preferencias`} className="btn btn-secondary">
+                  Perfil de comunicação
+                </Link>
+                <Link href={`/paciente/${patient.id}/avaliar`} className="btn">
+                  + Nova avaliação
+                </Link>
+              </>
             )}
           </div>
         </div>
@@ -241,6 +254,8 @@ export default async function PacientePage({ params }: { params: Promise<{ id: s
                     <td>
                       {s.activityType === "CHAT"
                         ? `${s.total} mensagens`
+                        : s.activityType === "AAC"
+                        ? `${s.total} frase(s)`
                         : s.total > 0
                           ? `${s.correct}/${s.total} (${Math.round(s.accuracy * 100)}%)`
                           : s.completed

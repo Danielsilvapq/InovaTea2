@@ -6,6 +6,7 @@ import { MEMORY_SYMBOLS } from "@/lib/activities";
 import { memoryCols } from "@/lib/generators";
 import { ActivityShell } from "./ActivityShell";
 import { ResultScreen } from "./ResultScreen";
+import { SpeakButton, useKidSettings, useSpeech } from "./KidSettings";
 import { saveSession, useElapsed, useSoftSound, type SaveResult } from "./useKid";
 
 function shuffle<T>(arr: T[]) {
@@ -40,6 +41,13 @@ export function MemoryGame({ patientId, level, pairs, soundOn }: Props) {
   const timer = useElapsed(!done);
   const play = useSoftSound(soundOn);
   const found = matched.size / 2;
+  const { bigTargets } = useKidSettings();
+  const { auto } = useSpeech();
+  const PROMPT = "Toque em duas cartas. Se forem iguais, elas ficam abertas.";
+  useEffect(() => {
+    if (!done) auto(PROMPT);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seed]);
 
   useEffect(() => {
     if (open.length !== 2) return;
@@ -50,10 +58,10 @@ export function MemoryGame({ patientId, level, pairs, soundOn }: Props) {
       setOpen([]);
     } else {
       // Tempo generoso para observar as cartas antes de virarem.
-      const t = setTimeout(() => setOpen([]), 1400);
+      const t = setTimeout(() => setOpen([]), bigTargets ? 2200 : 1400);
       return () => clearTimeout(t);
     }
-  }, [open, deck, play]);
+  }, [open, deck, play, bigTargets]);
 
   useEffect(() => {
     if (deck.length && found === pairs && !done) finish(true);
@@ -125,9 +133,12 @@ export function MemoryGame({ patientId, level, pairs, soundOn }: Props) {
       onStop={() => finish(false)}
     >
       <div className="card stack">
-        <p className="center" style={{ fontSize: "1.15rem" }}>
-          Toque em duas cartas. Se forem iguais, elas ficam abertas. Jogadas: <strong>{moves}</strong>
-        </p>
+        <div className="prompt-row">
+          <p className="center" style={{ fontSize: "1.15rem", margin: 0 }}>
+            Toque em duas cartas. Se forem iguais, elas ficam abertas. Jogadas: <strong>{moves}</strong>
+          </p>
+          <SpeakButton text={PROMPT} />
+        </div>
         <div className="mem-grid" style={{ ["--cols" as string]: memoryCols(pairs) }}>
           {deck.map((c, i) => {
             const isOpen = open.includes(i) || matched.has(i);

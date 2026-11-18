@@ -3,11 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { countRounds, type CountRound } from "@/lib/generators";
+import { reduceOptions } from "@/lib/accessibility";
 import { ActivityShell } from "./ActivityShell";
 import { ResultScreen } from "./ResultScreen";
+import { SpeakButton, useAttempt, useKidSettings, useSpeech } from "./KidSettings";
 import { saveSession, useElapsed, useSoftSound, type SaveResult } from "./useKid";
 
-type Answer = { question: string; chosen: string; correct: boolean; timeMs: number };
+type Answer = { question: string; chosen: string; correct: boolean; timeMs: number; attempts: number };
 
 /** Figuras em fileiras de 5, para facilitar a contagem. */
 function Group({ emoji, n, crossed = 0 }: { emoji: string; n: number; crossed?: number }) {
@@ -23,25 +25,40 @@ function Group({ emoji, n, crossed = 0 }: { emoji: string; n: number; crossed?: 
 /** Vamos Contar: contagem, soma e subtração com apoio visual. */
 export function CountGame({ patientId, level, soundOn }: { patientId: string; level: number; soundOn: boolean }) {
   const router = useRouter();
+  const { answerSupport } = useKidSettings();
   const [seed, setSeed] = useState(0);
   const [rounds, setRounds] = useState<CountRound[]>([]);
-  useEffect(() => setRounds(countRounds(level)), [level, seed]);
+  useEffect(() => {
+    setRounds(countRounds(level).map((r) => {
+      const red = reduceOptions(r.options, r.options.indexOf(r.answer), answerSupport);
+      return { ...r, options: red.options };
+    }));
+  }, [level, seed, answerSupport]);
   const [round, setRound] = useState(0);
-  const [chosen, setChosen] = useState<number | null>(null);
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [done, setDone] = useState<{ result: SaveResult | null; completed: boolean; duration: number } | null>(null);
   const start = useRef(Date.now());
   const timer = useElapsed(!done);
   const play = useSoftSound(soundOn);
+  const { speak, auto } = useSpeech();
+  const att = useAttempt(`${seed}-${round}`);
   const r = rounds[round];
-  const COUNT_ROUNDS = rounds.length || 5;
+  const TOTAL = rounds.length || 5;
+  const correctIdx = r ? r.options.indexOf(r.answer) : -1;
 
-  function choose(n: number) {
-    if (chosen !== null || !r) return;
-    setChosen(n);
-    const ok = n === r.answer;
-    play(ok ? "ok" : "try");
-    setAnswers((a) => [...a, { question: r.prompt, chosen: String(n), correct: ok, timeMs: Date.now() - start.current }]);
+  useEffect(() => {
+    if (r && !done) auto(`${r.prompt} ${r.options.join(", ")}.`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [r, done]);
+
+  function choose(i: number) {
+    if (!r) return;
+    const res = att.attempt(i, correctIdx);
+    if (!res) return;
+    play(i === correctIdx ? "ok" : "try");
+    if (!res.done) return void speak("Quase! Conte de novo com calma.");
+    auto(i === correctIdx ? `Isso mesmo! ${r.answer}.` : `A resposta é ${r.answer}.`);
+    setAnswers((a) => [...a, { question: r.prompt, chosen: String(r.options[i]), correct: res.firstTry, timeMs: Date.now() - start.current, attempts: res.attempts }]);
   }
 
   async function finish(completed: boolean) {
@@ -49,23 +66,21 @@ export function CountGame({ patientId, level, soundOn }: { patientId: string; le
     const correct = answers.filter((a) => a.correct).length;
     const result = await saveSession({
       patientId, activityKey: "contar", level, correct, wrong: answers.length - correct,
-      total: completed ? COUNT_ROUNDS : answers.length, durationSec: duration, completed, details: { answers },
+      total: completed ? TOTAL : answers.length, durationSec: duration, completed, details: { answers, answerSupport },
     });
     setDone({ result, completed, duration });
     router.refresh();
   }
 
   function next() {
-    if (round + 1 >= COUNT_ROUNDS) return void finish(true);
+    if (round + 1 >= TOTAL) return void finish(true);
     setRound(round + 1);
-    setChosen(null);
     start.current = Date.now();
   }
 
   function restart() {
     setSeed((s) => s + 1);
     setRound(0);
-    setChosen(null);
     setAnswers([]);
     setDone(null);
     timer.reset();
@@ -74,16 +89,21 @@ export function CountGame({ patientId, level, soundOn }: { patientId: string; le
   if (done) {
     return (
       <ResultScreen patientId={patientId} result={done.result} correct={answers.filter((a) => a.correct).length}
-        total={done.completed ? COUNT_ROUNDS : answers.length} durationSec={done.duration} completed={done.completed} onRestart={restart} />
+        total={done.completed ? TOTAL : answers.length} durationSec={done.duration} completed={done.completed} onRestart={restart} />
     );
   }
 
+  const solved = att.solved !== null;
+  const right = att.solved === correctIdx;
   return (
-    <ActivityShell emoji="🔢" title="Vamos Contar" level={level} step={answers.length} totalSteps={COUNT_ROUNDS}
+    <ActivityShell emoji="🔢" title="Vamos Contar" level={level} step={answers.length} totalSteps={TOTAL}
       stepLabel="Conta" elapsedSec={timer.sec} onStop={() => finish(false)}>
       {r && (
         <div className="card stack center">
-          <h2 style={{ fontSize: "1.4rem" }}>{r.prompt}</h2>
+          <div className="prompt-row">
+            <h2 style={{ fontSize: "1.4rem", margin: 0 }}>{r.prompt}</h2>
+            <SpeakButton text={r.prompt} />
+          </div>
           {r.kind === "count" && <Group emoji={r.emoji} n={r.a} />}
           {r.kind === "add" && (
             <div className="count-sum">
@@ -98,20 +118,18 @@ export function CountGame({ patientId, level, soundOn }: { patientId: string; le
               <p className="small muted">As figuras apagadas foram embora.</p>
             </>
           )}
-          <div className="option-grid" style={{ maxWidth: 560, width: "100%", margin: "0 auto", gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
-            {r.options.map((n) => {
-              const cls = chosen === null ? "" : n === r.answer ? "correct" : n === chosen ? "chosen-wrong" : "";
-              return (
-                <button key={`${round}-${n}`} className={`option ${cls}`} onClick={() => choose(n)} disabled={chosen !== null}>
-                  <span className="emoji" style={{ fontWeight: 800 }}>{n}</span>
-                </button>
-              );
-            })}
+          <div className="option-grid" style={{ maxWidth: 560, width: "100%", margin: "0 auto", gridTemplateColumns: `repeat(${r.options.length}, minmax(0, 1fr))` }}>
+            {r.options.map((n, i) => (
+              <button key={`${round}-${n}`} className={`option ${att.cls(i, correctIdx)}`} onClick={() => choose(i)} disabled={att.disabled(i)}>
+                <span className="emoji" style={{ fontWeight: 800 }}>{n}</span>
+              </button>
+            ))}
           </div>
-          {chosen !== null && (
+          {!solved && att.tried.length > 0 && <div className="error-box" role="status"><strong>💛 Quase! Conte de novo com calma.</strong></div>}
+          {solved && (
             <div className="stack">
-              <div className={chosen === r.answer ? "ok-box" : "error-box"} role="status">
-                <strong>{chosen === r.answer ? "✅ Isso mesmo!" : `💛 Quase! A resposta é ${r.answer}.`}</strong>
+              <div className={right ? "ok-box" : "error-box"} role="status">
+                <strong>{right ? (att.firstTry ? "✅ Isso mesmo!" : "✅ Agora sim!") : `💛 Quase! A resposta é ${r.answer}.`}</strong>
                 <div>
                   {r.kind === "count" && `Contando um por um, são ${r.answer}.`}
                   {r.kind === "add" && `${r.a} + ${r.b} = ${r.answer}.`}
@@ -119,7 +137,7 @@ export function CountGame({ patientId, level, soundOn }: { patientId: string; le
                 </div>
               </div>
               <button className="btn btn-lg btn-block" onClick={next} autoFocus>
-                {round + 1 >= COUNT_ROUNDS ? "Ver resultado" : "Próxima conta →"}
+                {round + 1 >= TOTAL ? "Ver resultado" : "Próxima conta →"}
               </button>
             </div>
           )}
