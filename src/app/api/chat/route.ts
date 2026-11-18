@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { getKidPatient } from "@/lib/kid-access";
-import { titoGreeting, titoReply } from "@/lib/tito";
+import { teabotGreeting, teabotReply } from "@/lib/teabot";
 import { computePoints, levelInfo } from "@/lib/gamification";
 import { age } from "@/lib/stats";
 
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     const patient = await getKidPatient(body.patientId);
     if (!patient) return NextResponse.json({ error: "Sem permissão" }, { status: 403 });
     const ctx = { childName: patient.name.split(" ")[0], age: age(patient.birthDate), interests: patient.interests };
-    const greeting = titoGreeting(ctx);
+    const greeting = teabotGreeting(ctx);
     const session = await db.activitySession.create({
       data: {
         patientId: patient.id,
@@ -64,7 +64,7 @@ export async function POST(req: Request) {
     // A API exige que a conversa comece com o usuário: removemos a saudação inicial do robô.
     while (history.length && history[0].role !== "user") history.shift();
     const ctx = { childName: patient.name.split(" ")[0], age: age(patient.birthDate), interests: patient.interests };
-    const { text, source } = await titoReply(ctx, history);
+    const { text, source } = await teabotReply(ctx, history);
     await db.chatMessage.create({ data: { sessionId: session.id, role: "assistant", content: text } });
     await db.activitySession.update({ where: { id: session.id }, data: { total: userCount + 1 } });
     return NextResponse.json({ reply: text, source });

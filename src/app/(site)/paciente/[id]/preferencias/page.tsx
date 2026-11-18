@@ -36,7 +36,7 @@ export default async function PreferenciasPage({ params }: { params: Promise<{ i
             </select>
           </div>
           <div className="field">
-            <label htmlFor="interests">Interesses favoritos (o Tito usa nas conversas)</label>
+            <label htmlFor="interests">Interesses favoritos (o TeaBot usa nas conversas)</label>
             <input id="interests" name="interests" defaultValue={p.interests ?? ""} />
           </div>
         </ActionForm>

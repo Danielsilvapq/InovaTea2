@@ -118,9 +118,9 @@ export const ACTIVITIES: ActivityDef[] = [
   {
     key: "conversa",
     type: "CHAT",
-    title: "Conversar com o Tito",
+    title: "Conversar com o TeaBot",
     emoji: "🤖",
-    description: "O Tito é um robô amigo que gosta de conversar.",
+    description: "O TeaBot é um robô amigo que gosta de conversar.",
     skill: "Comunicação e conversação",
     color: "lavender",
     levels: 1,

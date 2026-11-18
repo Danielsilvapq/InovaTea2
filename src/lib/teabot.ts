@@ -1,14 +1,14 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 
-export interface TitoContext {
+export interface TeaBotContext {
   childName: string;
   age: number;
   interests: string | null;
 }
 
-function systemPrompt(ctx: TitoContext) {
-  return `Você é o Tito, um robô amigo dentro do InovaTea, um aplicativo de apoio para crianças e adolescentes com Transtorno do Espectro Autista (TEA). Você conversa em português do Brasil com ${ctx.childName}, que tem ${ctx.age} anos.${
+function systemPrompt(ctx: TeaBotContext) {
+  return `Você é o TeaBot, um robô amigo dentro do InovaTea, um aplicativo de apoio para crianças e adolescentes com Transtorno do Espectro Autista (TEA). Você conversa em português do Brasil com ${ctx.childName}, que tem ${ctx.age} anos.${
     ctx.interests ? ` Os interesses favoritos de ${ctx.childName} são: ${ctx.interests}. Use esses temas para criar conexão quando fizer sentido.` : ""
   }
 
@@ -21,7 +21,7 @@ Como você fala:
 - Seja calmo, gentil e paciente. Elogie o esforço de forma específica ("Gostei de como você explicou isso").
 - Aceite respostas curtas, repetidas ou fora do assunto sem corrigir de forma brusca. Se a criança mudar de assunto, acompanhe e depois, se for natural, volte ao tema.
 - Pode usar no máximo um emoji por resposta. Não use letras maiúsculas para enfatizar nem muitos pontos de exclamação.
-- Responda apenas com o texto da fala do Tito, sem marcações, listas ou títulos.
+- Responda apenas com o texto da fala do TeaBot, sem marcações, listas ou títulos.
 
 Segurança:
 - Você não é médico nem terapeuta. Não faça diagnósticos e não dê orientações médicas.
@@ -37,12 +37,12 @@ function getClient() {
   return client;
 }
 
-export function titoGreeting(ctx: TitoContext) {
-  return `Oi, ${ctx.childName}! Eu sou o Tito, um robô amigo. 🤖 Como você está se sentindo hoje?`;
+export function teabotGreeting(ctx: TeaBotContext) {
+  return `Oi, ${ctx.childName}! Eu sou o TeaBot, um robô amigo. 🤖 Como você está se sentindo hoje?`;
 }
 
-export async function titoReply(
-  ctx: TitoContext,
+export async function teabotReply(
+  ctx: TeaBotContext,
   history: { role: "user" | "assistant"; content: string }[],
 ): Promise<{ text: string; source: "claude" | "roteiro" }> {
   const anthropic = getClient();
@@ -66,9 +66,9 @@ export async function titoReply(
       }
     } catch (error) {
       if (error instanceof Anthropic.APIError) {
-        console.error(`[tito] Erro da API ${error.status}: ${error.message}`);
+        console.error(`[teabot] Erro da API ${error.status}: ${error.message}`);
       } else {
-        console.error("[tito] Falha ao chamar a API", error);
+        console.error("[teabot] Falha ao chamar a API", error);
       }
     }
   }
@@ -105,7 +105,7 @@ const FOLLOW_UPS = [
   "Você tem um desenho ou jogo favorito?",
 ];
 
-function scriptedReply(ctx: TitoContext, history: { role: string; content: string }[]) {
+function scriptedReply(ctx: TeaBotContext, history: { role: string; content: string }[]) {
   const last = norm(history.filter((m) => m.role === "user").at(-1)?.content ?? "");
   const turn = history.filter((m) => m.role === "user").length;
 

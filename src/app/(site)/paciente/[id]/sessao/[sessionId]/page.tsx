@@ -91,7 +91,7 @@ export default async function SessaoPage({ params }: { params: Promise<{ id: str
 
       {s.messages.length > 0 && (
         <div className="card">
-          <h2>Conversa com o Tito</h2>
+          <h2>Conversa com o TeaBot</h2>
           <div className="chat" style={{ maxHeight: "none" }}>
             {s.messages.map((m) => (
               <div key={m.id} className={`bubble ${m.role === "assistant" ? "bot" : "me"}`}>

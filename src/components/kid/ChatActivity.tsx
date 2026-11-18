@@ -34,7 +34,7 @@ export function ChatActivity({ patientId, childName }: { patientId: string; chil
       body: JSON.stringify({ action: "start", patientId }),
     });
     if (!res.ok) {
-      setError("Não consegui ligar o Tito agora.");
+      setError("Não consegui ligar o TeaBot agora.");
       return;
     }
     const data = await res.json();
@@ -108,7 +108,7 @@ export function ChatActivity({ patientId, childName }: { patientId: string; chil
         durationSec={done.duration}
         completed={sent > 0}
         onRestart={restart}
-        message={`Você mandou ${sent} mensagem(ns) para o Tito. Ele adorou conversar com você, ${childName}!`}
+        message={`Você mandou ${sent} mensagem(ns) para o TeaBot. Ele adorou conversar com você, ${childName}!`}
       />
     );
   }
@@ -116,7 +116,7 @@ export function ChatActivity({ patientId, childName }: { patientId: string; chil
   return (
     <ActivityShell
       emoji="🤖"
-      title="Conversar com o Tito"
+      title="Conversar com o TeaBot"
       step={Math.min(sent, GOAL)}
       totalSteps={GOAL}
       stepLabel="Mensagem"
@@ -135,11 +135,11 @@ export function ChatActivity({ patientId, childName }: { patientId: string; chil
         <div className="chat" ref={listRef} aria-live="polite">
           {messages.map((m, i) => (
             <div key={i} className={`bubble ${m.role === "assistant" ? "bot" : "me"}`}>
-              {m.role === "assistant" && <strong>🤖 Tito: </strong>}
+              {m.role === "assistant" && <strong>🤖 TeaBot: </strong>}
               {m.content}
             </div>
           ))}
-          {sending && <div className="bubble bot muted">🤖 Tito está pensando...</div>}
+          {sending && <div className="bubble bot muted">🤖 TeaBot está pensando...</div>}
         </div>
         <div className="row">
           {QUICK.map((q) => (

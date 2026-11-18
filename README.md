@@ -9,7 +9,7 @@ registros de evolução, que podem ser acompanhados por **responsáveis** e **pr
 ### Para a criança (modo criança)
 - **Quizzes** com 3 níveis cada: Emoções, Minha Rotina e Situações do Dia a Dia (habilidades sociais).
 - **Mini-jogos**: Jogo da Memória, Siga a Sequência e Respirar com o Balão (autorregulação).
-- **Conversa com o Tito**: robô amigo com linguagem literal e frases curtas, usando a API do Claude. Sem chave de API, funciona com respostas prontas.
+- **Conversa com o TeaBot**: robô amigo com linguagem literal e frases curtas, usando a API do Claude. Sem chave de API, funciona com respostas prontas.
 - **Barra de progresso sempre visível**: em cada atividade (pergunta X de Y, tempo da sessão), no nível geral e na meta do dia.
 - **Pontos e níveis**: nível geral (Semente → Galáxia) e níveis por atividade. O próximo nível é liberado com 70% de acerto.
 - **Humor ao final**: a criança diz como se sente, e isso fica registrado na sessão.
@@ -17,7 +17,7 @@ registros de evolução, que podem ser acompanhados por **responsáveis** e **pr
 
 ### Para responsáveis
 - Cadastro de uma ou mais crianças, com avatar, interesses e observações sensoriais.
-- Painel de evolução com gráficos de acerto e tempo de uso, evolução por atividade, histórico detalhado de sessões (incluindo as conversas com o Tito), avaliações e comentários.
+- Painel de evolução com gráficos de acerto e tempo de uso, evolução por atividade, histórico detalhado de sessões (incluindo as conversas com o TeaBot), avaliações e comentários.
 - Preferências sensoriais: som (desligado por padrão), redução de movimentos e tamanho do texto.
 - Código de acesso para vincular profissionais, que também podem ser removidos.
 
@@ -61,7 +61,7 @@ prisma/schema.prisma          Modelo de dados (usuários, pacientes, sessões, a
 src/lib/activities.ts         Catálogo de atividades e conteúdo dos quizzes
 src/lib/gamification.ts       Regras de pontos e níveis
 src/lib/stats.ts              Indicadores de evolução
-src/lib/tito.ts               Robô de conversa (Claude + modo roteirizado)
+src/lib/teabot.ts               Robô de conversa (Claude + modo roteirizado)
 src/app/(site)/               Área de responsáveis e profissionais
 src/app/crianca/[id]/         Modo criança e atividades
 src/app/api/                  Registro de sessões e conversa
