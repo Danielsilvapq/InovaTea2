@@ -41,7 +41,17 @@ export default async function PranchaPage({ params }: { params: Promise<{ id: st
               <tbody>
                 {items.map((it) => (
                   <tr key={it.id}>
-                    <td><strong>{it.emoji} {it.article ? `${it.article} ` : ""}{it.label}</strong></td>
+                    <td>
+                      <span className="row" style={{ gap: 8, flexWrap: "nowrap" }}>
+                        {it.photoId ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={`/api/fotos/${it.photoId}`} alt="" className="thumb-sm" />
+                        ) : (
+                          <span>{it.emoji}</span>
+                        )}
+                        <strong>{it.article ? `${it.article} ` : ""}{it.label}</strong>
+                      </span>
+                    </td>
                     <td className="small">{typeLabel(it.type)}</td>
                     <td className="small">{it.author.name} · {it.createdAt.toLocaleDateString("pt-BR")}</td>
                     <td>

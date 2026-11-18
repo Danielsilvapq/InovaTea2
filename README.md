@@ -23,11 +23,14 @@ registros de evolução, que podem ser acompanhados por **responsáveis** e **pr
 - Preferências sensoriais: som (desligado por padrão), redução de movimentos e tamanho do texto.
 - Código de acesso para vincular profissionais, que também podem ser removidos.
 
+- **📷 Fotos da família:** o responsável envia fotos do dia a dia (atividade em casa, comportamento, alimentação, sono, escola, conquista, comunicação) com descrição e data. A foto é reduzida no aparelho e perde os metadados (inclusive a localização) antes do envio. Pode virar figura da prancha Minha Voz com um clique.
+
 ### Para profissionais de saúde
 - Cadastro com especialidade e registro profissional (CRP, CRM, CRFa…).
 - Vínculo com o paciente pelo código fornecido pelo responsável.
 - **Avaliações estruturadas** (comunicação, interação social, atenção, regulação emocional e autonomia, de 1 a 5), com parecer e recomendações, compartilhadas ou não com o responsável.
 - Comentários no perfil e acesso a todo o histórico de sessões.
+- Galeria de **fotos da família**, com filtro por tipo e comentários em cada foto; o painel mostra quantas fotos novas chegaram na semana.
 - **Metas personalizadas** para cada paciente (terminar uma atividade N vezes, fazer em N dias diferentes, atingir um acerto mínimo ou chegar a um nível), com prazo opcional e recado para a criança. A meta aparece na trilha de conquistas da criança.
 
 ## Para todos os graus do TEA
@@ -91,6 +94,7 @@ src/components/kid/           Jogos, quiz, conversa e tela de resultado
 ```
 
 ## Privacidade (LGPD)
+As fotos ficam guardadas no banco de dados (não em pasta pública) e só são entregues, pelo endereço protegido `/api/fotos/[id]`, ao responsável e aos profissionais vinculados à criança.
 Os dados de saúde só ficam visíveis para o responsável e para os profissionais que ele vincular.
 O cadastro exige consentimento explícito. Antes de usar com pacientes reais, revise a política de
 privacidade, a hospedagem e os contratos com os operadores de dados.

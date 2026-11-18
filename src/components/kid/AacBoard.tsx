@@ -61,8 +61,13 @@ export function AacBoard({ onSay, sayLabel = "🔊 Falar", customItems = [], rec
   }
 
   const renderCard = (card: AacCard) => (
-    <button key={card.id} className={`aac-card ${cardColor(card)}`} onClick={() => tap(card)}>
-      <span className="emoji" aria-hidden>{card.emoji}</span>
+    <button key={card.id} className={`aac-card ${cardColor(card)} ${card.imageUrl ? "has-photo" : ""}`} onClick={() => tap(card)}>
+      {card.imageUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img className="aac-photo" src={card.imageUrl} alt="" loading="lazy" />
+      ) : (
+        <span className="emoji" aria-hidden>{card.emoji}</span>
+      )}
       <span>{card.label}</span>
     </button>
   );
@@ -84,7 +89,12 @@ export function AacBoard({ onSay, sayLabel = "🔊 Falar", customItems = [], rec
           ) : (
             parts.map((p, i) => (
               <span key={i} className={`aac-chip ${cardColor(p)}`}>
-                <span aria-hidden>{p.emoji}</span>
+                {p.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img className="aac-chip-photo" src={p.imageUrl} alt="" />
+                ) : (
+                  <span aria-hidden>{p.emoji}</span>
+                )}
                 {p.label}
               </span>
             ))

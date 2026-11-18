@@ -12,6 +12,7 @@ import { addComment, toggleGoal, unlinkProfessional } from "@/app/actions/patien
 import { achievementStates, goalStates } from "@/lib/achievements";
 import { communicationLabel, readingLabel, supportLabel } from "@/lib/accessibility";
 import { phrasesFromSessions, topPhrases } from "@/lib/aac";
+import { photoCategory, photoUrl } from "@/lib/photos";
 
 const EVAL_FIELDS = [
   ["communication", "Comunicação"],
@@ -37,6 +38,13 @@ export default async function PacientePage({ params }: { params: Promise<{ id: s
   if (!access) notFound();
   const { patient, isGuardian, isProfessional } = access;
 
+  const [recentPhotos, photoCount] = await Promise.all([
+    db.photo.findMany({
+      where: { patientId: id }, orderBy: { createdAt: "desc" }, take: 4,
+      select: { id: true, caption: true, category: true, createdAt: true, _count: { select: { comments: true } } },
+    }),
+    db.photo.count({ where: { patientId: id } }),
+  ]);
   const [sessions, evaluations, comments, professionals, goals] = await Promise.all([
     db.activitySession.findMany({ where: { patientId: id }, orderBy: { startedAt: "desc" } }),
     db.evaluation.findMany({
@@ -279,6 +287,33 @@ export default async function PacientePage({ params }: { params: Promise<{ id: s
               })}
             </tbody>
           </table>
+        )}
+      </div>
+
+      <div className="card" id="fotos">
+        <div className="row between">
+          <h2 style={{ margin: 0 }}>📷 Fotos da família ({photoCount})</h2>
+          <Link href={`/paciente/${patient.id}/fotos`} className="btn">
+            {isGuardian ? "Enviar foto" : "Ver e comentar"}
+          </Link>
+        </div>
+        {recentPhotos.length === 0 ? (
+          <p className="muted small">
+            {isGuardian ? "Envie fotos do dia a dia para os profissionais acompanharem de perto." : "A família ainda não enviou fotos."}
+          </p>
+        ) : (
+          <div className="photo-strip">
+            {recentPhotos.map((ph) => (
+              <Link key={ph.id} href={`/paciente/${patient.id}/fotos`} className="photo-mini">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={photoUrl(ph.id)} alt={ph.caption} loading="lazy" />
+                <span className="small">
+                  {photoCategory(ph.category).emoji} {ph.createdAt.toLocaleDateString("pt-BR")}
+                  {ph._count.comments > 0 ? ` · 💬 ${ph._count.comments}` : ""}
+                </span>
+              </Link>
+            ))}
+          </div>
         )}
       </div>
 

@@ -257,3 +257,29 @@ export async function removeAacItem(formData: FormData) {
   await db.aacItem.delete({ where: { id } });
   revalidatePath(`/paciente/${item.patientId}/prancha`);
 }
+
+export async function addPhotoComment(_: FormState, formData: FormData): Promise<FormState> {
+  const photoId = String(formData.get("photoId"));
+  const content = String(formData.get("content") ?? "").trim();
+  if (content.length < 2) return { error: "Escreva o comentário." };
+  const photo = await db.photo.findUnique({ where: { id: photoId }, select: { patientId: true } });
+  if (!photo) return { error: "Foto não encontrada." };
+  const access = await getAccessiblePatient(photo.patientId);
+  if (!access) return { error: "Sem permissão." };
+  await db.photoComment.create({ data: { photoId, authorId: access.user.id, content: content.slice(0, 1000) } });
+  revalidatePath(`/paciente/${photo.patientId}/fotos`);
+  return { ok: "Comentário enviado." };
+}
+
+/** Só quem enviou a foto pode apagá-la (a figura da prancha ligada a ela também sai). */
+export async function deletePhoto(formData: FormData) {
+  const photoId = String(formData.get("photoId"));
+  const photo = await db.photo.findUnique({ where: { id: photoId }, select: { patientId: true, authorId: true } });
+  if (!photo) return;
+  const access = await getAccessiblePatient(photo.patientId);
+  if (!access || access.user.id !== photo.authorId) return;
+  await db.aacItem.deleteMany({ where: { photoId } });
+  await db.photo.delete({ where: { id: photoId } });
+  revalidatePath(`/paciente/${photo.patientId}/fotos`);
+  revalidatePath(`/paciente/${photo.patientId}`);
+}

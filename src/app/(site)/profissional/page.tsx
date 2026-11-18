@@ -21,7 +21,7 @@ export default async function ProfissionalPage() {
             orderBy: { createdAt: "desc" },
             take: 1,
           },
-          _count: { select: { sessions: true, goals: { where: { active: true } } } },
+          _count: { select: { sessions: true, goals: { where: { active: true } }, photos: { where: { createdAt: { gte: new Date(Date.now() - 7 * 864e5) } } } } },
         },
       },
     },
@@ -64,6 +64,7 @@ export default async function ProfissionalPage() {
                 <th>Última atividade</th>
                 <th>Sua última avaliação</th>
                 <th>Metas ativas</th>
+                <th>Fotos novas</th>
                 <th />
               </tr>
             </thead>
@@ -82,6 +83,13 @@ export default async function ProfissionalPage() {
                   <td>{p.sessions[0] ? p.sessions[0].startedAt.toLocaleDateString("pt-BR") : "—"}</td>
                   <td>{p.evaluations[0] ? p.evaluations[0].createdAt.toLocaleDateString("pt-BR") : "Pendente"}</td>
                   <td>{p._count.goals}</td>
+                  <td>
+                    {p._count.photos > 0 ? (
+                      <Link href={`/paciente/${p.id}/fotos`} className="badge badge-primary">📷 {p._count.photos}</Link>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
                   <td>
                     <div className="row" style={{ flexWrap: "nowrap" }}>
                       <Link href={`/paciente/${p.id}`} className="btn btn-secondary">

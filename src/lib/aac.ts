@@ -368,6 +368,7 @@ export interface AacItemLike {
   emoji: string;
   label: string;
   article?: string | null;
+  photoId?: string | null;
 }
 export const CUSTOM_TYPES = [
   { value: "phrase", label: "Frase pronta (fala do jeito que está escrita)" },
@@ -383,7 +384,10 @@ export function customToCard(it: AacItemLike): AacCard {
   const obj = art ? `${art} ${it.label}` : it.label;
   const to = art === "o" ? `ao ${it.label}` : art === "a" ? `à ${it.label}` : art === "os" ? `aos ${it.label}` : art === "as" ? `às ${it.label}` : `para ${it.label}`;
   const kind = (["phrase", "thing", "food", "person", "place", "action"].includes(it.type) ? it.type : "thing") as AacKind;
-  return { id: "c-" + it.id, emoji: it.emoji || "⭐", label: it.type === "phrase" && !/[.!?]$/.test(it.label) ? it.label + "." : it.label, kind, obj, to };
+  return {
+    id: "c-" + it.id, emoji: it.emoji || "⭐", label: it.type === "phrase" && !/[.!?]$/.test(it.label) ? it.label + "." : it.label, kind, obj, to,
+    imageUrl: it.photoId ? `/api/fotos/${it.photoId}` : undefined,
+  };
 }
 
 /** Frases faladas registradas nas sessões da Minha Voz (as mais recentes primeiro). */

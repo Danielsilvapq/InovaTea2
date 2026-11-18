@@ -33,6 +33,8 @@ model User {
   comments       Comment[]
   goals          Goal[]
   aacItems       AacItem[]
+  photos         Photo[]
+  photoComments  PhotoComment[]
 }
 
 /// Criança ou adolescente acompanhado na plataforma.
@@ -67,6 +69,7 @@ model Patient {
   comments      Comment[]
   goals         Goal[]
   aacItems      AacItem[]
+  photos        Photo[]
 }
 
 model ProfessionalLink {
@@ -177,10 +180,44 @@ model AacItem {
   emoji     String   @default("⭐")
   label     String
   article   String? // "o" | "a" | "os" | "as" (para coisas, pessoas e lugares)
+  photoId   String? // foto real enviada pela família, usada no lugar do emoji
   createdAt DateTime @default(now())
 
   patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
   author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([patientId])
+}
+
+/// Foto enviada pela família para os profissionais que acompanham a criança.
+/// A imagem fica no banco (não em pasta pública) e só é servida a quem tem acesso.
+model Photo {
+  id        String         @id @default(cuid())
+  patientId String
+  authorId  String
+  data      Bytes
+  mimeType  String
+  width     Int
+  height    Int
+  caption   String
+  category  String // "casa" | "comportamento" | "alimentacao" | "sono" | "escola" | "conquista" | "comunicacao" | "outro"
+  takenAt   DateTime?
+  createdAt DateTime       @default(now())
+
+  patient   Patient        @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  author    User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments  PhotoComment[]
+
+  @@index([patientId, createdAt])
+}
+
+model PhotoComment {
+  id        String   @id @default(cuid())
+  photoId   String
+  authorId  String
+  content   String
+  createdAt DateTime @default(now())
+
+  photo     Photo    @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
 }
