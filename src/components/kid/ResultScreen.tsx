@@ -59,6 +59,22 @@ export function ResultScreen({ patientId, result, correct, total, durationSec, c
           🔓 Novo desafio liberado: <strong>nível {result.unlockedActivityLevel}</strong> desta atividade.
         </div>
       )}
+      {result?.earned?.goals.map((g) => (
+        <div key={g.title} className="ok-box earned-note">
+          <span className="earned-emoji">{g.emoji}</span>
+          <span>
+            🎯 <strong>Meta cumprida:</strong> {g.title}!
+          </span>
+        </div>
+      ))}
+      {result?.earned?.achievements.map((a) => (
+        <div key={a.title} className="ok-box earned-note">
+          <span className="earned-emoji">{a.emoji}</span>
+          <span>
+            🏅 <strong>Nova conquista:</strong> {a.title}!
+          </span>
+        </div>
+      ))}
       {!result && <div className="error-box">Não conseguimos salvar agora. Tudo bem, vamos tentar na próxima.</div>}
 
       <div>
@@ -87,6 +103,11 @@ export function ResultScreen({ patientId, result, correct, total, durationSec, c
         <Link href={`/crianca/${patientId}`} className="btn btn-lg btn-secondary">
           🏠 Voltar ao início
         </Link>
+        {(result?.earned?.achievements.length || result?.earned?.goals.length) ? (
+          <Link href={`/crianca/${patientId}/conquistas`} className="btn btn-lg btn-secondary">
+            🏅 Ver conquistas
+          </Link>
+        ) : null}
       </div>
     </div>
   );

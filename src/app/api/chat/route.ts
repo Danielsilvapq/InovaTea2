@@ -5,6 +5,7 @@ import { getKidPatient } from "@/lib/kid-access";
 import { teabotGreeting, teabotReply } from "@/lib/teabot";
 import { computePoints, levelInfo } from "@/lib/gamification";
 import { age } from "@/lib/stats";
+import { newlyEarned } from "@/lib/achievements";
 
 const MAX_USER_MESSAGES = 40;
 
@@ -91,8 +92,13 @@ export async function POST(req: Request) {
     }),
     db.patient.update({ where: { id: patient.id }, data: { totalPoints: { increment: points } } }),
   ]);
+  const [allSessions, goals] = await Promise.all([
+    db.activitySession.findMany({ where: { patientId: patient.id } }),
+    db.goal.findMany({ where: { patientId: patient.id, active: true } }),
+  ]);
   return NextResponse.json({
     sessionId: session.id,
+    earned: newlyEarned(session.id, allSessions, goals),
     points,
     totalPoints: updated.totalPoints,
     levelUp: levelInfo(updated.totalPoints).level > before.level,

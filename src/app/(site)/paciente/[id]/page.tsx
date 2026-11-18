@@ -8,7 +8,8 @@ import { LevelBar } from "@/components/LevelBar";
 import { ProgressBar } from "@/components/ProgressBar";
 import { LineChart, BarChart } from "@/components/Charts";
 import { ActionForm } from "@/components/ActionForm";
-import { addComment, unlinkProfessional } from "@/app/actions/patients";
+import { addComment, toggleGoal, unlinkProfessional } from "@/app/actions/patients";
+import { achievementStates, goalStates } from "@/lib/achievements";
 
 const EVAL_FIELDS = [
   ["communication", "Comunicação"],
@@ -34,7 +35,7 @@ export default async function PacientePage({ params }: { params: Promise<{ id: s
   if (!access) notFound();
   const { patient, isGuardian, isProfessional } = access;
 
-  const [sessions, evaluations, comments, professionals] = await Promise.all([
+  const [sessions, evaluations, comments, professionals, goals] = await Promise.all([
     db.activitySession.findMany({ where: { patientId: id }, orderBy: { startedAt: "desc" } }),
     db.evaluation.findMany({
       where: { patientId: id, ...(isGuardian ? { sharedWithGuardian: true } : {}) },
@@ -50,8 +51,17 @@ export default async function PacientePage({ params }: { params: Promise<{ id: s
       where: { patientId: id },
       include: { professional: { select: { id: true, name: true, specialty: true, registryNumber: true } } },
     }),
+    db.goal.findMany({
+      where: { patientId: id },
+      include: { professional: { select: { name: true } } },
+      orderBy: [{ active: "desc" }, { createdAt: "desc" }],
+    }),
   ]);
   const stats = buildStats(sessions);
+  const medals = achievementStates(sessions);
+  const earnedMedals = medals.filter((m) => m.earnedAt).sort((a, b) => +new Date(b.earnedAt!) - +new Date(a.earnedAt!));
+  const nextMedals = medals.filter((m) => !m.earnedAt).sort((a, b) => b.current / b.target - a.current / a.target).slice(0, 4);
+  const goalList = goalStates(goals, sessions);
 
   return (
     <div className="stack">
@@ -250,6 +260,110 @@ export default async function PacientePage({ params }: { params: Promise<{ id: s
               })}
             </tbody>
           </table>
+        )}
+      </div>
+
+      <div className="card" id="metas">
+        <div className="row between">
+          <h2 style={{ margin: 0 }}>🎯 Metas e conquistas</h2>
+          {isProfessional && (
+            <Link href={`/paciente/${patient.id}/metas/nova`} className="btn">
+              + Nova meta
+            </Link>
+          )}
+        </div>
+        <h3 style={{ marginTop: 16 }}>Metas personalizadas</h3>
+        {goalList.length === 0 && (
+          <p className="muted small">
+            {isProfessional
+              ? "Nenhuma meta criada. Crie uma meta para aparecer na trilha de conquistas da criança."
+              : "Nenhuma meta criada pelos profissionais ainda."}
+          </p>
+        )}
+        <div className="stack">
+          {goalList.map((g) => (
+            <div key={g.goal.id} className="card-soft stack" style={{ opacity: g.goal.active ? 1 : 0.6 }}>
+              <div className="row between">
+                <strong>
+                  {g.goal.emoji} {g.goal.title}
+                </strong>
+                <span className="row small" style={{ gap: 6 }}>
+                  {g.earnedAt ? (
+                    <span className="badge badge-ok">✅ Cumprida em {new Date(g.earnedAt).toLocaleDateString("pt-BR")}</span>
+                  ) : !g.goal.active ? (
+                    <span className="badge">Encerrada</span>
+                  ) : g.overdue ? (
+                    <span className="badge">⏰ Prazo vencido</span>
+                  ) : (
+                    <span className="badge badge-primary">Em andamento</span>
+                  )}
+                </span>
+              </div>
+              <div className="small">{g.description}</div>
+              {!g.earnedAt && <ProgressBar value={g.current / g.target} tone="primary" rightLabel={`${g.current} de ${g.target}`} label="Progresso" />}
+              <div className="row between small muted">
+                <span>
+                  Criada por {g.goal.professional.name} em {g.goal.createdAt.toLocaleDateString("pt-BR")}
+                  {g.goal.dueDate ? ` · prazo ${g.goal.dueDate.toLocaleDateString("pt-BR")}` : ""}
+                </span>
+                {isProfessional && access.user.id === g.goal.professionalId && (
+                  <form action={toggleGoal}>
+                    <input type="hidden" name="goalId" value={g.goal.id} />
+                    <button className="btn btn-ghost small">{g.goal.active ? "Encerrar meta" : "Reativar"}</button>
+                  </form>
+                )}
+              </div>
+              {g.goal.note && <div className="small">💬 Recado: {g.goal.note}</div>}
+            </div>
+          ))}
+        </div>
+
+        <h3 style={{ marginTop: 20 }}>
+          Medalhas da trilha ({earnedMedals.length} de {medals.length})
+        </h3>
+        {earnedMedals.length === 0 ? (
+          <p className="muted small">Nenhuma medalha ainda.</p>
+        ) : (
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Medalha</th>
+                  <th>O que foi feito</th>
+                  <th>Data</th>
+                </tr>
+              </thead>
+              <tbody>
+                {earnedMedals.map((m) => (
+                  <tr key={m.def.id}>
+                    <td>
+                      {m.def.emoji} {m.def.title}
+                    </td>
+                    <td className="small">{m.def.goal}</td>
+                    <td>{new Date(m.earnedAt!).toLocaleDateString("pt-BR")}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {nextMedals.length > 0 && (
+          <>
+            <h3 style={{ marginTop: 16 }}>Próximas medalhas</h3>
+            <div className="grid grid-2" style={{ gap: 10 }}>
+              {nextMedals.map((m) => (
+                <div key={m.def.id} className="card-soft stack" style={{ padding: 12 }}>
+                  <span className="small">
+                    <strong>
+                      {m.def.emoji} {m.def.title}
+                    </strong>{" "}
+                    · {m.def.goal}
+                  </span>
+                  <ProgressBar value={m.current / m.target} rightLabel={`${m.current} de ${m.target}`} />
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
 

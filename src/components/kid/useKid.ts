@@ -10,6 +10,7 @@ export interface SaveResult {
   newLevel: number;
   unlockedActivityLevel?: number | null;
   accuracy?: number;
+  earned?: { achievements: { emoji: string; title: string }[]; goals: { emoji: string; title: string }[] };
 }
 
 export interface SavePayload {

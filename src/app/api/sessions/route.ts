@@ -5,6 +5,7 @@ import { getKidPatient } from "@/lib/kid-access";
 import { getActivity } from "@/lib/activities";
 import { computePoints, levelInfo } from "@/lib/gamification";
 import { unlockedLevel } from "@/lib/stats";
+import { newlyEarned } from "@/lib/achievements";
 
 const schema = z.object({
   patientId: z.string(),
@@ -62,8 +63,14 @@ export async function POST(req: Request) {
   const after = levelInfo(updated.totalPoints);
   const newUnlocked = unlockedLevel([...previous, { activityKey: activity.key, level, accuracy, completed: d.completed }], activity.key);
 
+  const [allSessions, goals] = await Promise.all([
+    db.activitySession.findMany({ where: { patientId: patient.id } }),
+    db.goal.findMany({ where: { patientId: patient.id, active: true } }),
+  ]);
+
   return NextResponse.json({
     sessionId: session.id,
+    earned: newlyEarned(session.id, allSessions, goals),
     points,
     totalPoints: updated.totalPoints,
     levelUp: after.level > before.level,

@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { ACTIVITIES } from "@/lib/activities";
 import { unlockedLevel } from "@/lib/stats";
 import { ProgressBar } from "@/components/ProgressBar";
+import { achievementStates, goalStates } from "@/lib/achievements";
 
 export default async function KidHome({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -12,8 +13,11 @@ export default async function KidHome({ params }: { params: Promise<{ id: string
   if (!patient) notFound();
   const sessions = await db.activitySession.findMany({
     where: { patientId: id },
-    select: { activityKey: true, level: true, accuracy: true, completed: true, startedAt: true, durationSec: true },
   });
+  const goals = await db.goal.findMany({ where: { patientId: id, active: true } });
+  const medals = achievementStates(sessions);
+  const got = medals.filter((m) => m.earnedAt).length;
+  const openGoals = goalStates(goals, sessions).filter((g) => !g.earnedAt);
   const today = new Date().toDateString();
   const todaySessions = sessions.filter((s) => s.startedAt.toDateString() === today);
   const todayGoal = 3;
@@ -30,6 +34,20 @@ export default async function KidHome({ params }: { params: Promise<{ id: string
         />
         {todaySessions.length >= todayGoal && <div className="ok-box">🌟 Você completou a meta de hoje! Parabéns!</div>}
       </div>
+
+      <Link href={`/crianca/${id}/conquistas`} className="card stack trophy-link">
+        <div className="row between">
+          <strong style={{ fontSize: "1.2rem" }}>🏅 Minhas conquistas</strong>
+          <span className="badge badge-primary">Ver todas →</span>
+        </div>
+        <ProgressBar value={got / medals.length} tone="primary" label="Medalhas" rightLabel={`${got} de ${medals.length}`} />
+        {openGoals.length > 0 && (
+          <span className="small">
+            🎯 {openGoals.length === 1 ? "1 meta do terapeuta em andamento" : `${openGoals.length} metas do terapeuta em andamento`}:{" "}
+            {openGoals.map((g) => `${g.goal.emoji} ${g.goal.title} (${g.current} de ${g.target})`).join(" · ")}
+          </span>
+        )}
+      </Link>
 
       <div className="grid grid-3">
         {ACTIVITIES.map((a) => {

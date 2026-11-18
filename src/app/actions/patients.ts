@@ -141,3 +141,57 @@ export async function updatePreferences(_: FormState, formData: FormData): Promi
   revalidatePath(`/crianca/${patientId}`);
   return { ok: "Preferências salvas." };
 }
+
+const goalSchema = z
+  .object({
+    patientId: z.string(),
+    title: z.string().trim().min(3, "Dê um nome curto para a meta."),
+    emoji: z.string().min(1).default("🎯"),
+    note: z.string().trim().max(200).optional(),
+    kind: z.enum(["SESSIONS", "DAYS", "ACCURACY", "LEVEL"]),
+    activityKey: z.string().optional(),
+    target: z.coerce.number().int().min(1).max(60),
+    minAccuracy: z.coerce.number().int().min(10).max(100).optional(),
+    level: z.coerce.number().int().min(1).max(5).optional(),
+    dueDate: z.string().optional(),
+  })
+  .superRefine((v, ctx) => {
+    if (v.kind === "LEVEL" && !v.activityKey) ctx.addIssue({ code: "custom", message: "Escolha a atividade para a meta de nível." });
+  });
+
+export async function addGoal(_: FormState, formData: FormData): Promise<FormState> {
+  const parsed = goalSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
+  const d = parsed.data;
+  const access = await getAccessiblePatient(d.patientId);
+  if (!access || !access.isProfessional) return { error: "Apenas profissionais vinculados podem criar metas." };
+  if (d.dueDate && Number.isNaN(Date.parse(d.dueDate))) return { error: "Data limite inválida." };
+  await db.goal.create({
+    data: {
+      patientId: d.patientId,
+      professionalId: access.user.id,
+      title: d.title,
+      emoji: d.emoji,
+      note: d.note || null,
+      kind: d.kind,
+      activityKey: d.activityKey || null,
+      target: d.kind === "LEVEL" ? 1 : d.target,
+      minAccuracy: d.kind === "ACCURACY" ? (d.minAccuracy ?? 70) / 100 : null,
+      level: d.kind === "LEVEL" ? d.level ?? 1 : null,
+      dueDate: d.dueDate ? new Date(d.dueDate) : null,
+    },
+  });
+  revalidatePath(`/paciente/${d.patientId}`);
+  redirect(`/paciente/${d.patientId}#metas`);
+}
+
+/** Encerra (arquiva) ou reativa uma meta. Só o profissional que criou pode mudar. */
+export async function toggleGoal(formData: FormData) {
+  const goalId = String(formData.get("goalId"));
+  const goal = await db.goal.findUnique({ where: { id: goalId } });
+  if (!goal) return;
+  const access = await getAccessiblePatient(goal.patientId);
+  if (!access || access.user.id !== goal.professionalId) return;
+  await db.goal.update({ where: { id: goalId }, data: { active: !goal.active } });
+  revalidatePath(`/paciente/${goal.patientId}`);
+}

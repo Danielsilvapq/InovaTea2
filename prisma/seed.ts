@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 const db = new PrismaClient();
 
 async function main() {
+  await db.goal.deleteMany();
   await db.comment.deleteMany();
   await db.evaluation.deleteMany();
   await db.chatMessage.deleteMany();
@@ -79,6 +80,21 @@ async function main() {
       summary: "Lucas demonstra boa adesão às atividades e evolução no reconhecimento de emoções básicas. Ainda apresenta dificuldade em situações sociais com linguagem figurada.",
       recommendations: "Manter o quiz de emoções no nível 2 e introduzir o quiz de situações do dia a dia 3x por semana.",
     },
+  });
+  const twelveDaysAgo = new Date(Date.now() - 12 * 864e5);
+  await db.goal.createMany({
+    data: [
+      {
+        patientId: child.id, professionalId: pro.id, title: "Respirar antes da escola", emoji: "🎈",
+        note: "Respirar devagar ajuda você a começar o dia mais calmo.", kind: "DAYS", activityKey: "respiracao",
+        target: 3, createdAt: twelveDaysAgo,
+      },
+      {
+        patientId: child.id, professionalId: pro.id, title: "Craque das emoções", emoji: "🌟",
+        note: "Você está aprendendo muito sobre as emoções!", kind: "ACCURACY", activityKey: "emocoes",
+        target: 3, minAccuracy: 0.75, createdAt: twelveDaysAgo,
+      },
+    ],
   });
   await db.comment.create({
     data: { patientId: child.id, authorId: guardian.id, content: "Hoje ele pediu sozinho para fazer a respiração do balão antes de dormir." },

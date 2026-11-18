@@ -31,6 +31,7 @@ model User {
   links          ProfessionalLink[]
   evaluations    Evaluation[]
   comments       Comment[]
+  goals          Goal[]
 }
 
 /// Criança ou adolescente acompanhado na plataforma.
@@ -57,6 +58,7 @@ model Patient {
   sessions      ActivitySession[]
   evaluations   Evaluation[]
   comments      Comment[]
+  goals         Goal[]
 }
 
 model ProfessionalLink {
@@ -132,4 +134,28 @@ model Comment {
   createdAt DateTime @default(now())
   patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
   author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+/// Meta personalizada criada por um profissional para o paciente.
+/// O progresso é calculado a partir das sessões feitas depois da criação.
+model Goal {
+  id             String    @id @default(cuid())
+  patientId      String
+  professionalId String
+  title          String
+  emoji          String    @default("🎯")
+  note           String? // recado para a criança
+  kind           String // "SESSIONS" | "DAYS" | "ACCURACY" | "LEVEL"
+  activityKey    String? // vazio = qualquer atividade
+  target         Int       @default(1)
+  minAccuracy    Float?
+  level          Int?
+  dueDate        DateTime?
+  active         Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+
+  patient        Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  professional   User      @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
 }

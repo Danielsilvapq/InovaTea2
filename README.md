@@ -13,6 +13,7 @@ registros de evolução, que podem ser acompanhados por **responsáveis** e **pr
 - **Barra de progresso sempre visível**: em cada atividade (pergunta X de Y, tempo da sessão), no nível geral e na meta do dia.
 - **Pontos e níveis**: nível geral (Semente → Galáxia) e níveis por atividade. O próximo nível é liberado com 70% de acerto.
 - **Humor ao final**: a criança diz como se sente, e isso fica registrado na sessão.
+- **Trilha de conquistas**: 22 medalhas em 7 trilhas (emoções, calma, social, rotina, atenção, números e constância), com barra de progresso em cada uma e aviso ao conquistar.
 - **Trava para adultos**: para sair do modo criança é preciso segurar o botão por 2 segundos.
 
 ### Para responsáveis
@@ -26,6 +27,7 @@ registros de evolução, que podem ser acompanhados por **responsáveis** e **pr
 - Vínculo com o paciente pelo código fornecido pelo responsável.
 - **Avaliações estruturadas** (comunicação, interação social, atenção, regulação emocional e autonomia, de 1 a 5), com parecer e recomendações, compartilhadas ou não com o responsável.
 - Comentários no perfil e acesso a todo o histórico de sessões.
+- **Metas personalizadas** para cada paciente (terminar uma atividade N vezes, fazer em N dias diferentes, atingir um acerto mínimo ou chegar a um nível), com prazo opcional e recado para a criança. A meta aparece na trilha de conquistas da criança.
 
 ## Ambiente adaptado ao TEA
 - Paleta suave e pouco saturada (azul calmo, verde sálvia, lavanda, areia), com modo escuro.

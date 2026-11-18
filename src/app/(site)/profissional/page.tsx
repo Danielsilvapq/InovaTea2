@@ -21,7 +21,7 @@ export default async function ProfissionalPage() {
             orderBy: { createdAt: "desc" },
             take: 1,
           },
-          _count: { select: { sessions: true } },
+          _count: { select: { sessions: true, goals: { where: { active: true } } } },
         },
       },
     },
@@ -63,6 +63,7 @@ export default async function ProfissionalPage() {
                 <th>Sessões</th>
                 <th>Última atividade</th>
                 <th>Sua última avaliação</th>
+                <th>Metas ativas</th>
                 <th />
               </tr>
             </thead>
@@ -80,6 +81,7 @@ export default async function ProfissionalPage() {
                   <td>{p._count.sessions}</td>
                   <td>{p.sessions[0] ? p.sessions[0].startedAt.toLocaleDateString("pt-BR") : "—"}</td>
                   <td>{p.evaluations[0] ? p.evaluations[0].createdAt.toLocaleDateString("pt-BR") : "Pendente"}</td>
+                  <td>{p._count.goals}</td>
                   <td>
                     <div className="row" style={{ flexWrap: "nowrap" }}>
                       <Link href={`/paciente/${p.id}`} className="btn btn-secondary">
