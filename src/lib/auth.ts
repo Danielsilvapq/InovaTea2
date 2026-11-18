@@ -5,7 +5,8 @@ import { redirect } from "next/navigation";
 import { db } from "./db";
 
 const COOKIE = "inovatea_session";
-const MAX_AGE = 60 * 60 * 24 * 7; // 7 dias
+const REMEMBER_AGE = 60 * 60 * 24 * 30; // "Manter conectado": 30 dias
+const SESSION_AGE = 60 * 60 * 12; // sem "manter conectado": até fechar o navegador (máx. 12 h)
 
 export type Role = "GUARDIAN" | "PROFESSIONAL";
 
@@ -20,12 +21,13 @@ function secret() {
   return new TextEncoder().encode(s);
 }
 
-export async function createSession(userId: string, role: Role) {
+export async function createSession(userId: string, role: Role, remember = true) {
+  const age = remember ? REMEMBER_AGE : SESSION_AGE;
   const token = await new SignJWT({ role })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(userId)
     .setIssuedAt()
-    .setExpirationTime(`${MAX_AGE}s`)
+    .setExpirationTime(`${age}s`)
     .sign(secret());
   const jar = await cookies();
   jar.set(COOKIE, token, {
@@ -33,7 +35,7 @@ export async function createSession(userId: string, role: Role) {
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: MAX_AGE,
+    ...(remember ? { maxAge: age } : {}),
   });
 }
 

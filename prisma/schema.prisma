@@ -35,6 +35,7 @@ model User {
   aacItems       AacItem[]
   photos         Photo[]
   photoComments  PhotoComment[]
+  passwordResets PasswordReset[]
 }
 
 /// Criança ou adolescente acompanhado na plataforma.
@@ -220,4 +221,15 @@ model PhotoComment {
 
   photo     Photo    @relation(fields: [photoId], references: [id], onDelete: Cascade)
   author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+/// Pedido de redefinição de senha. Guardamos só o hash do código, válido por 1 hora.
+model PasswordReset {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

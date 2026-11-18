@@ -59,6 +59,12 @@ O **TeaBot** também conversa por figuras e responde com frases curtas para quem
 - Fonte Atkinson Hyperlegible, botões grandes, layout previsível e apoio visual (emoji) em todas as perguntas.
 - Linguagem literal e frases curtas. Expressões figuradas aparecem só como conteúdo de aprendizado, sempre explicadas.
 
+## Entrar no sistema
+- Login com o último e-mail lembrado no aparelho, botão para mostrar a senha e aviso de Caps Lock.
+- **Manter conectado** por 30 dias (ou só até fechar o navegador).
+- Ao abrir uma página protegida sem estar logado, a pessoa entra e volta direto para ela.
+- **Esqueci minha senha:** link de uso único, válido por 1 hora (guardamos só o hash do código). Em desenvolvimento o link aparece na tela e no log do servidor; **em produção é preciso configurar um provedor de e-mail** (ex.: Resend ou SendGrid) em `requestPasswordReset`, em `src/app/actions/auth.ts`.
+
 ## Tecnologias
 Next.js 15 (App Router) · React 19 · TypeScript · Prisma (SQLite em desenvolvimento) · API do Claude (`@anthropic-ai/sdk`) · autenticação por JWT em cookie httpOnly.
 

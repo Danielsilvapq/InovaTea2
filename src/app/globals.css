@@ -118,6 +118,8 @@ p { margin: 0 0 0.8em; }
 .nav { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 .nav a { text-decoration: none; color: var(--ink-2); padding: 8px 12px; border-radius: 10px; }
 .nav a:hover { background: var(--surface-2); }
+.nav a.btn { color: var(--primary-ink); }
+.nav a.btn:hover { background: var(--primary); }
 main { padding: 24px 0 48px; }
 
 /* Cartões */
@@ -317,6 +319,32 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--p
   .aac-urgent-btn { min-height: 52px; font-size: 0.9rem; }
   .aac-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; }
   .aac-tab { flex: 0 0 auto; }
+}
+
+/* Login */
+.login-layout { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr) minmax(0, 460px); align-items: center; max-width: 980px; margin: 16px auto; }
+.login-welcome { padding: 8px; }
+.login-welcome h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); }
+.login-welcome p { font-size: 1.1rem; color: var(--ink-2); max-width: 30em; }
+.login-mark { width: 72px; height: 72px; display: grid; place-items: center; font-size: 2.6rem; border-radius: 22px; background: var(--primary-soft); margin-bottom: 16px; }
+.login-points { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 12px; }
+.login-points li { display: flex; gap: 12px; align-items: center; color: var(--ink-2); }
+.login-points span { width: 44px; height: 44px; flex: none; display: grid; place-items: center; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); font-size: 1.3rem; }
+.login-card { padding: 28px; }
+.login-card h2 { font-size: 1.6rem; }
+.login-known { display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 12px 14px; border-radius: 12px; background: var(--surface-2); margin-bottom: 16px; }
+.linkbtn { background: none; border: 0; padding: 4px 6px; font: inherit; font-weight: 700; color: var(--primary); cursor: pointer; text-decoration: underline; }
+.login-divider { display: flex; align-items: center; gap: 12px; margin: 22px 0 14px; color: var(--ink-muted); font-size: 0.9rem; }
+.login-divider::before, .login-divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.password-wrap { position: relative; }
+.password-wrap input { padding-right: 120px; }
+.password-toggle { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); min-height: 36px; padding: 4px 10px; border-radius: 10px; border: 0; background: var(--surface-2); color: var(--ink-2); font: inherit; font-size: 0.88rem; font-weight: 700; cursor: pointer; }
+.caps-warning { margin-top: 6px; font-size: 0.88rem; color: var(--warn); font-weight: 700; }
+@media (max-width: 760px) {
+  /* No celular, o formulário vem primeiro; a apresentação fica de fora. */
+  .login-layout { grid-template-columns: 1fr; gap: 8px; margin-top: 0; }
+  .login-welcome { display: none; }
+  .login-card { padding: 20px; }
 }
 
 /* Fotos da família */

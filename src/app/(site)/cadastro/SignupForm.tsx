@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { signup } from "@/app/actions/auth";
+import { PasswordInput } from "@/components/PasswordInput";
 
 const SPECIALTIES = [
   "Psicologia",
@@ -107,12 +108,7 @@ export function SignupForm({ initialRole }: { initialRole: "GUARDIAN" | "PROFESS
         </>
       )}
 
-      <div className="field">
-        <label htmlFor="password">
-          Senha <span className="hint">(mínimo de 8 caracteres)</span>
-        </label>
-        <input id="password" name="password" type="password" minLength={8} required autoComplete="new-password" />
-      </div>
+      <PasswordInput id="password" name="password" label="Senha" hint="(mínimo de 8 caracteres)" autoComplete="new-password" minLength={8} />
 
       <label className="row" style={{ fontWeight: 400, alignItems: "flex-start", flexWrap: "nowrap" }}>
         <input type="checkbox" name="consent" required style={{ width: 24, minHeight: 24, marginTop: 2 }} />

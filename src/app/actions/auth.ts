@@ -1,6 +1,8 @@
 "use server";
 
 import bcrypt from "bcryptjs";
+import crypto from "node:crypto";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/lib/db";
@@ -54,14 +56,64 @@ export async function signup(_: FormState, formData: FormData): Promise<FormStat
   redirect("/painel");
 }
 
+/** Só aceita voltar para páginas internas (evita redirecionar para outro site). */
+function safeNext(v: FormDataEntryValue | null) {
+  const n = String(v ?? "");
+  return n.startsWith("/") && !n.startsWith("//") && !n.startsWith("/entrar") ? n : "/painel";
+}
+
 export async function login(_: FormState, formData: FormData): Promise<FormState> {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
+  if (!email || !password) return { error: "Preencha o e-mail e a senha." };
   const user = await db.user.findUnique({ where: { email } });
   if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
-    return { error: "E-mail ou senha incorretos." };
+    // Mesma mensagem nos dois casos, para não revelar quais e-mails têm conta.
+    return { error: "E-mail ou senha incorretos. Confira e tente de novo, ou use “Esqueci minha senha”." };
   }
-  await createSession(user.id, user.role as "GUARDIAN" | "PROFESSIONAL");
+  await createSession(user.id, user.role as "GUARDIAN" | "PROFESSIONAL", formData.get("remember") === "on");
+  redirect(safeNext(formData.get("next")));
+}
+
+// ---------------------------------------------------------------------------
+// Esqueci minha senha
+// ---------------------------------------------------------------------------
+const sha256 = (t: string) => crypto.createHash("sha256").update(t).digest("hex");
+
+export type ResetState = (FormState & { devLink?: string }) | undefined;
+
+export async function requestPasswordReset(_: ResetState, formData: FormData): Promise<ResetState> {
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  if (!z.string().email().safeParse(email).success) return { error: "Digite um e-mail válido." };
+  const user = await db.user.findUnique({ where: { email } });
+  const done = { ok: "Se este e-mail tiver uma conta, enviamos um link para criar uma nova senha. Ele vale por 1 hora." };
+  if (!user) return done;
+
+  const token = crypto.randomBytes(32).toString("base64url");
+  await db.passwordReset.create({ data: { userId: user.id, tokenHash: sha256(token), expiresAt: new Date(Date.now() + 60 * 60 * 1000) } });
+  const h = await headers();
+  const origin = `${h.get("x-forwarded-proto") ?? "http"}://${h.get("host")}`;
+  const link = `${origin}/redefinir-senha?token=${token}`;
+  // Envio por e-mail: configure um provedor (ex.: Resend, SendGrid) em produção.
+  console.info(`[senha] Link de redefinição para ${email}: ${link}`);
+  return process.env.NODE_ENV === "production" ? done : { ...done, devLink: link };
+}
+
+export async function resetPassword(_: FormState, formData: FormData): Promise<FormState> {
+  const token = String(formData.get("token") ?? "");
+  const password = String(formData.get("password") ?? "");
+  if (password.length < 8) return { error: "A senha precisa ter pelo menos 8 caracteres." };
+  if (password !== String(formData.get("confirm") ?? "")) return { error: "As duas senhas não são iguais." };
+  const reset = await db.passwordReset.findUnique({ where: { tokenHash: sha256(token) }, include: { user: true } });
+  if (!reset || reset.usedAt || reset.expiresAt < new Date()) {
+    return { error: "Este link não vale mais. Peça um novo em “Esqueci minha senha”." };
+  }
+  await db.$transaction([
+    db.user.update({ where: { id: reset.userId }, data: { passwordHash: await bcrypt.hash(password, 10) } }),
+    db.passwordReset.update({ where: { id: reset.id }, data: { usedAt: new Date() } }),
+    db.passwordReset.deleteMany({ where: { userId: reset.userId, usedAt: null } }),
+  ]);
+  await createSession(reset.userId, reset.user.role as "GUARDIAN" | "PROFESSIONAL", true);
   redirect("/painel");
 }
 
