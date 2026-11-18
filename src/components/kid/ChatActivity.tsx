@@ -6,6 +6,7 @@ import { ActivityShell } from "./ActivityShell";
 import { ResultScreen } from "./ResultScreen";
 import { useElapsed, type SaveResult } from "./useKid";
 import { AacBoard } from "./AacBoard";
+import type { AacItemLike } from "@/lib/aac";
 import { SpeakButton, useKidSettings, useSpeech } from "./KidSettings";
 
 const GOAL = 8; // meta de mensagens da criança por conversa
@@ -16,7 +17,7 @@ interface Msg {
   content: string;
 }
 
-export function ChatActivity({ patientId, childName }: { patientId: string; childName: string }) {
+export function ChatActivity({ patientId, childName, customItems = [], recent = [] }: { patientId: string; childName: string; customItems?: AacItemLike[]; recent?: string[] }) {
   const router = useRouter();
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -160,7 +161,7 @@ export function ChatActivity({ patientId, childName }: { patientId: string; chil
           </button>
         </div>
         {mode === "figuras" ? (
-          <AacBoard onSay={(sentence) => send(sentence)} sayLabel="📨 Enviar para o TeaBot" />
+          <AacBoard customItems={customItems} recent={recent} onSay={(sentence) => send(sentence)} sayLabel="📨 Enviar para o TeaBot" />
         ) : (
           <>
             <div className="row">

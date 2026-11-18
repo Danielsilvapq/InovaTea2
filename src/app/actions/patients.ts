@@ -221,3 +221,39 @@ export async function toggleGoal(formData: FormData) {
   await db.goal.update({ where: { id: goalId }, data: { active: !goal.active } });
   revalidatePath(`/paciente/${goal.patientId}`);
 }
+
+const aacItemSchema = z.object({
+  patientId: z.string(),
+  type: z.enum(["phrase", "thing", "food", "person", "place", "action"]),
+  emoji: z.string().min(1).max(16).default("⭐"),
+  label: z.string().trim().min(1, "Escreva a palavra ou a frase.").max(80),
+  article: z.enum(["", "o", "a", "os", "as"]).optional(),
+});
+
+/** Pais e terapeutas personalizam a prancha Minha Voz da criança. */
+export async function addAacItem(_: FormState, formData: FormData): Promise<FormState> {
+  const parsed = aacItemSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
+  const d = parsed.data;
+  const access = await getAccessiblePatient(d.patientId);
+  if (!access) return { error: "Sem permissão." };
+  await db.aacItem.create({
+    data: {
+      patientId: d.patientId, authorId: access.user.id, type: d.type, emoji: d.emoji, label: d.label,
+      article: ["thing", "person", "place"].includes(d.type) && d.article ? d.article : null,
+    },
+  });
+  revalidatePath(`/paciente/${d.patientId}/prancha`);
+  revalidatePath(`/crianca/${d.patientId}`);
+  return { ok: `"${d.label}" foi adicionada à prancha.` };
+}
+
+export async function removeAacItem(formData: FormData) {
+  const id = String(formData.get("itemId"));
+  const item = await db.aacItem.findUnique({ where: { id } });
+  if (!item) return;
+  const access = await getAccessiblePatient(item.patientId);
+  if (!access) return;
+  await db.aacItem.delete({ where: { id } });
+  revalidatePath(`/paciente/${item.patientId}/prancha`);
+}

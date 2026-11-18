@@ -15,6 +15,43 @@ export function KidSettingsProvider({ value, children }: { value: KidSettings; c
 }
 export const useKidSettings = () => useContext(Ctx);
 
+/** Preferências de voz deste aparelho (velocidade, voz escolhida, falar ao tocar). */
+export interface VoicePrefs {
+  rate: number;
+  voiceURI: string;
+  speakOnTap: boolean;
+}
+const VOICE_KEY = "inovatea-voz";
+export function readVoicePrefs(): VoicePrefs {
+  try {
+    const raw = localStorage.getItem(VOICE_KEY);
+    if (raw) return { rate: 0.9, voiceURI: "", speakOnTap: true, ...JSON.parse(raw) };
+  } catch {}
+  return { rate: 0.9, voiceURI: "", speakOnTap: true };
+}
+export function writeVoicePrefs(p: VoicePrefs) {
+  try {
+    localStorage.setItem(VOICE_KEY, JSON.stringify(p));
+  } catch {}
+}
+/** Vozes em português disponíveis neste aparelho. */
+export function usePortugueseVoices() {
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  useEffect(() => {
+    const load = () => {
+      try {
+        setVoices(window.speechSynthesis.getVoices().filter((v) => v.lang?.toLowerCase().startsWith("pt")));
+      } catch {}
+    };
+    load();
+    try {
+      window.speechSynthesis.addEventListener("voiceschanged", load);
+      return () => window.speechSynthesis.removeEventListener("voiceschanged", load);
+    } catch {}
+  }, []);
+  return voices;
+}
+
 /** Voz em português (Web Speech API). Funciona offline na maioria dos aparelhos. */
 export function useSpeech() {
   const { narration } = useKidSettings();
@@ -23,10 +60,12 @@ export function useSpeech() {
       const synth = window.speechSynthesis;
       if (!synth) return;
       synth.cancel();
+      const prefs = readVoicePrefs();
       const u = new SpeechSynthesisUtterance(speechText(text));
       u.lang = "pt-BR";
-      u.rate = 0.9;
-      const voice = synth.getVoices().find((v) => v.lang?.toLowerCase().startsWith("pt"));
+      u.rate = prefs.rate;
+      const all = synth.getVoices();
+      const voice = all.find((v) => v.voiceURI === prefs.voiceURI) ?? all.find((v) => v.lang?.toLowerCase().startsWith("pt-br")) ?? all.find((v) => v.lang?.toLowerCase().startsWith("pt"));
       if (voice) u.voice = voice;
       synth.speak(u);
     } catch {}

@@ -269,16 +269,52 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--p
 .big-targets .mem-card, .big-targets .odd-cell { font-size: 3rem; }
 .big-targets .speak-btn { width: 64px; height: 64px; font-size: 1.9rem; }
 
-/* Minha Voz (CAA) */
-.aac-strip { display: flex; gap: 10px; align-items: center; min-height: 96px; padding: 12px; border-radius: 18px; border: 3px solid var(--primary); background: var(--surface); flex-wrap: wrap; }
+/* Minha Voz (CAA) — cores por tipo de palavra, em tons suaves */
+.aac { --aac-people: #f7e7b4; --aac-action: #d8efdd; --aac-noun: #fbe0c8; --aac-desc: #d9e8f6; --aac-time: #e8eaee; --aac-social: #f3dcea; --aac-starter: #e7e3f4; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .aac { --aac-people: #4a4226; --aac-action: #23402c; --aac-noun: #4a3424; --aac-desc: #253a4a; --aac-time: #33393f; --aac-social: #47283a; --aac-starter: #2e2a44; } }
+:root[data-theme="dark"] .aac { --aac-people: #4a4226; --aac-action: #23402c; --aac-noun: #4a3424; --aac-desc: #253a4a; --aac-time: #33393f; --aac-social: #47283a; --aac-starter: #2e2a44; }
+.aac-people { background: var(--aac-people) !important; } .aac-action { background: var(--aac-action) !important; } .aac-noun { background: var(--aac-noun) !important; }
+.aac-desc { background: var(--aac-desc) !important; } .aac-time { background: var(--aac-time) !important; } .aac-social, .aac-question { background: var(--aac-social) !important; }
+.aac-starter, .aac-custom { background: var(--aac-starter) !important; }
+.aac-urgent { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); }
+.aac-urgent-btn { min-height: 56px; border-radius: 14px; border: 2px solid var(--warn); background: var(--warn-soft); color: var(--ink); font: inherit; font-weight: 800; cursor: pointer; padding: 8px 10px; }
+.aac-urgent-btn span { font-size: 1.4rem; }
+.aac-strip { width: 100%; display: flex; gap: 10px; align-items: center; min-height: 96px; padding: 12px; border-radius: 18px; border: 3px solid var(--primary); background: var(--surface); flex-wrap: wrap; font: inherit; color: var(--ink); cursor: pointer; text-align: left; }
 .aac-chip { display: grid; justify-items: center; padding: 6px 10px; border-radius: 14px; background: var(--primary-soft); font-weight: 700; }
 .aac-chip span { font-size: 2rem; line-height: 1.1; }
-.aac-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.aac-preview { font-size: 1.25rem; font-weight: 800; padding: 4px 6px; }
+.aac-recent { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.aac-recent-btn { min-height: 40px; padding: 6px 12px; font-size: 0.95rem; }
+.aac-starters { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 112px), 1fr)); }
+.aac-starters .aac-card { min-height: 88px; }
+.aac-starters .aac-card .emoji { font-size: 2rem; }
+.aac-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.aac-tab { font: inherit; font-weight: 700; padding: 8px 12px; border-radius: 12px; border: 2px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; min-height: 44px; }
+.aac-tab.on { border-color: var(--primary); background: var(--primary-soft); }
 .aac-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 120px), 1fr)); }
-.aac-card { display: grid; justify-items: center; gap: 4px; padding: 12px 8px; border-radius: 18px; border: 3px solid var(--line); background: var(--surface); font: inherit; font-weight: 700; cursor: pointer; color: var(--ink); min-height: 112px; align-content: center; }
+.aac-card { display: grid; justify-items: center; gap: 4px; padding: 12px 8px; border-radius: 18px; border: 3px solid transparent; background: var(--surface); font: inherit; font-weight: 700; cursor: pointer; color: var(--ink); min-height: 112px; align-content: center; text-align: center; line-height: 1.2; }
 .aac-card .emoji { font-size: 2.6rem; line-height: 1; }
-.aac-card:hover { border-color: var(--primary); }
-.aac-card.starter { background: var(--lavender-soft); }
+.aac-card:hover, .aac-card:focus-visible { border-color: var(--primary); }
+.aac-key { padding: 1px 8px; border-radius: 8px; }
+.big-targets .aac-card { min-height: 140px; font-size: 1.1rem; }
+.big-targets .aac-card .emoji { font-size: 3.2rem; }
+.big-targets .aac-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); }
+.aac-overlay { position: fixed; inset: 0; z-index: 50; background: rgba(23, 32, 38, 0.55); overflow-y: auto; padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
+.aac-overlay-inner { max-width: 1000px; margin: 0 auto; display: grid; gap: 12px; }
+.speak-anywhere { min-height: 44px; }
+@media (max-width: 640px) {
+  .aac-starters, .aac-recent { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 8px; padding-bottom: 6px; scroll-snap-type: x proximity; }
+  .aac-starters .aac-card { flex: 0 0 100px; min-height: 84px; scroll-snap-align: start; }
+  .aac-recent-btn { flex: 0 0 auto; white-space: nowrap; }
+  .aac-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .aac-card { min-height: 96px; padding: 8px 4px; font-size: 0.9rem; }
+  .aac-card .emoji { font-size: 2.1rem; }
+  .big-targets .aac-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .aac-urgent { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .aac-urgent-btn { min-height: 52px; font-size: 0.9rem; }
+  .aac-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; }
+  .aac-tab { flex: 0 0 auto; }
+}
 
 /* Mapa de fases */
 .world { display: grid; gap: 10px; padding: 14px; border-radius: 18px; background: var(--surface-2); }

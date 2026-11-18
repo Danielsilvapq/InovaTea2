@@ -32,6 +32,7 @@ model User {
   evaluations    Evaluation[]
   comments       Comment[]
   goals          Goal[]
+  aacItems       AacItem[]
 }
 
 /// Criança ou adolescente acompanhado na plataforma.
@@ -65,6 +66,7 @@ model Patient {
   evaluations   Evaluation[]
   comments      Comment[]
   goals         Goal[]
+  aacItems      AacItem[]
 }
 
 model ProfessionalLink {
@@ -162,6 +164,23 @@ model Goal {
 
   patient        Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
   professional   User      @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+}
+
+/// Figura ou frase personalizada da prancha Minha Voz de uma criança.
+model AacItem {
+  id        String   @id @default(cuid())
+  patientId String
+  authorId  String
+  type      String // "phrase" | "thing" | "food" | "person" | "place" | "action"
+  emoji     String   @default("⭐")
+  label     String
+  article   String? // "o" | "a" | "os" | "as" (para coisas, pessoas e lugares)
+  createdAt DateTime @default(now())
+
+  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([patientId])
 }

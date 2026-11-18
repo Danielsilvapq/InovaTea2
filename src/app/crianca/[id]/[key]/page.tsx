@@ -6,6 +6,7 @@ import { getActivity } from "@/lib/activities";
 import { memoryPairs, quizRound, sequenceConfig } from "@/lib/generators";
 import { PhaseMap } from "@/components/kid/PhaseMap";
 import { AacActivity } from "@/components/kid/AacActivity";
+import { phrasesFromSessions } from "@/lib/aac";
 import { unlockedLevel } from "@/lib/stats";
 import { UNLOCK_ACCURACY } from "@/lib/gamification";
 import { QuizGame } from "@/components/kid/QuizGame";
@@ -31,8 +32,15 @@ export default async function ActivityPage({
   const activity = getActivity(key);
   if (!patient || !activity) notFound();
 
-  if (activity.type === "AAC") return <AacActivity patientId={id} />;
-  if (activity.type === "CHAT") return <ChatActivity patientId={id} childName={patient.name.split(" ")[0]} />;
+  if (activity.type === "AAC" || activity.type === "CHAT") {
+    const [aacItems, aacSessions] = await Promise.all([
+      db.aacItem.findMany({ where: { patientId: id }, orderBy: { createdAt: "asc" } }),
+      db.activitySession.findMany({ where: { patientId: id, activityKey: "minhavoz" }, orderBy: { startedAt: "desc" }, take: 20 }),
+    ]);
+    const recent = [...new Set(phrasesFromSessions(aacSessions).map((p) => p.text))].slice(0, 8);
+    if (activity.type === "AAC") return <AacActivity patientId={id} customItems={aacItems} recent={recent} />;
+    return <ChatActivity patientId={id} childName={patient.name.split(" ")[0]} customItems={aacItems} recent={recent} />;
+  }
 
   const sessions = await db.activitySession.findMany({
     where: { patientId: id, activityKey: key },

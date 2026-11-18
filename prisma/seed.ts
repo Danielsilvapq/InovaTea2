@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 const db = new PrismaClient();
 
 async function main() {
+  await db.aacItem.deleteMany();
   await db.goal.deleteMany();
   await db.comment.deleteMany();
   await db.evaluation.deleteMany();
@@ -75,6 +76,14 @@ async function main() {
     },
   });
   await db.patient.update({ where: { id: bia.id }, data: { totalPoints: 18 } });
+  await db.aacItem.createMany({
+    data: [
+      { patientId: bia.id, authorId: guardian.id, type: "person", emoji: "🐶", label: "Thor", article: "o" },
+      { patientId: bia.id, authorId: guardian.id, type: "action", emoji: "📺", label: "ver a Galinha Pintadinha" },
+      { patientId: bia.id, authorId: guardian.id, type: "food", emoji: "🍫", label: "danone" },
+      { patientId: bia.id, authorId: pro.id, type: "phrase", emoji: "🎧", label: "Quero o meu fone, está muito barulho." },
+    ],
+  });
 
   // Sessões dos últimos 12 dias, com melhora gradual
   const plan: [string, string, number][] = [

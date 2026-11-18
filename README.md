@@ -38,7 +38,16 @@ Cada criança tem um **perfil de comunicação**, preenchido pelo responsável o
 - **Narração automática:** perguntas, opções, instruções, respiração e resultados lidos em voz alta, com o botão 🔊 em todas as telas.
 - **Botões grandes e mais tempo** para dificuldades motoras ou de atenção.
 
-**Minha Voz** é uma prancha de comunicação alternativa (CAA): a criança toca em figuras ("Eu quero" + "água"), o aparelho fala a frase e ela fica registrada para os adultos. O **TeaBot** também conversa por figuras e responde com frases curtas para quem fala pouco ou não fala.
+**Minha Voz** é uma prancha de comunicação alternativa (CAA) completa:
+- **255 figuras em 13 grupos**: frases rápidas, conversa, perguntas, sentimentos, corpo e saúde, comer e beber, brincar, ações, lugares, pessoas, rotina, quando e palavras. As cores seguem o tipo de palavra (pessoas, ações, coisas, sentimentos), como nas pranchas de CAA.
+- **14 começos de frase** ("Eu quero", "Eu preciso de", "Está doendo", "Me dá", "Onde está", "Posso"...) e **montagem com português correto**: "Eu quero" + parque + depois → "Eu quero ir ao parque depois."; "Está doendo" + barriga → "Minha barriga está doendo."; "Eu quero" + brincar + mamãe → "Eu quero brincar com a mamãe."
+- **Barra de urgência** sempre visível (ajuda, dor, banheiro, pare, pausa), frases prontas que falam com um toque e **frases recentes** para repetir.
+- **Voz ajustável** no aparelho: velocidade, escolha da voz e falar cada figura ao tocar.
+- **Figuras e frases personalizadas** cadastradas por pais e terapeutas (nome do cachorro, desenho favorito, pedidos frequentes), com artigo para a frase sair certa.
+- **Botão 🗣️ Falar** no topo de todas as telas do modo criança, para quem fala pouco ou não fala, inclusive no meio de um jogo.
+- Tudo o que a criança comunica fica registrado: frases mais usadas e últimas frases no perfil.
+
+O **TeaBot** também conversa por figuras e responde com frases curtas para quem fala pouco ou não fala.
 
 ## Ambiente adaptado ao TEA
 - Paleta suave e pouco saturada (azul calmo, verde sálvia, lavanda, areia), com modo escuro.

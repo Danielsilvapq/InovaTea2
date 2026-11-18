@@ -11,6 +11,7 @@ import { ActionForm } from "@/components/ActionForm";
 import { addComment, toggleGoal, unlinkProfessional } from "@/app/actions/patients";
 import { achievementStates, goalStates } from "@/lib/achievements";
 import { communicationLabel, readingLabel, supportLabel } from "@/lib/accessibility";
+import { phrasesFromSessions, topPhrases } from "@/lib/aac";
 
 const EVAL_FIELDS = [
   ["communication", "Comunicação"],
@@ -63,6 +64,9 @@ export default async function PacientePage({ params }: { params: Promise<{ id: s
   const earnedMedals = medals.filter((m) => m.earnedAt).sort((a, b) => +new Date(b.earnedAt!) - +new Date(a.earnedAt!));
   const nextMedals = medals.filter((m) => !m.earnedAt).sort((a, b) => b.current / b.target - a.current / a.target).slice(0, 4);
   const goalList = goalStates(goals, sessions);
+  const aacPhrases = phrasesFromSessions(sessions);
+  const aacTop = topPhrases(aacPhrases, 5);
+  const showAac = aacPhrases.length > 0 || patient.communication !== "VERBAL";
 
   return (
     <div className="stack">
@@ -277,6 +281,35 @@ export default async function PacientePage({ params }: { params: Promise<{ id: s
           </table>
         )}
       </div>
+
+      {showAac && (
+        <div className="card" id="comunicacao">
+          <div className="row between">
+            <h2 style={{ margin: 0 }}>🗣️ Comunicação pela Minha Voz</h2>
+            <Link href={`/paciente/${patient.id}/prancha`} className="btn btn-secondary">
+              Personalizar prancha e ver tudo
+            </Link>
+          </div>
+          {aacPhrases.length === 0 ? (
+            <p className="muted small">Nenhuma frase registrada ainda.</p>
+          ) : (
+            <div className="grid grid-2" style={{ marginTop: 12 }}>
+              <div>
+                <h3>Mais usadas</h3>
+                <ol style={{ margin: 0 }}>{aacTop.map((t) => <li key={t.text}>{t.text} <span className="badge">{t.count}x</span></li>)}</ol>
+              </div>
+              <div>
+                <h3>Últimas frases</h3>
+                <ul style={{ margin: 0 }}>
+                  {aacPhrases.slice(0, 5).map((p, i) => (
+                    <li key={i}>{p.text} <span className="small muted">{new Date(p.at).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</span></li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="card" id="metas">
         <div className="row between">
