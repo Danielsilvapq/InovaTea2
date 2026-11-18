@@ -47,7 +47,7 @@ export function CountGame({ patientId, level, soundOn }: { patientId: string; le
   const correctIdx = r ? r.options.indexOf(r.answer) : -1;
 
   useEffect(() => {
-    if (r && !done) auto(`${r.prompt} ${r.options.join(", ")}.`);
+    if (r && !done) auto(`${r.spoken} ${r.options.join(", ")}.`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [r, done]);
 
@@ -102,7 +102,7 @@ export function CountGame({ patientId, level, soundOn }: { patientId: string; le
         <div className="card stack center">
           <div className="prompt-row">
             <h2 style={{ fontSize: "1.4rem", margin: 0 }}>{r.prompt}</h2>
-            <SpeakButton text={r.prompt} />
+            <SpeakButton text={`${r.spoken} ${r.options.join(", ")}.`} />
           </div>
           {r.kind === "count" && <Group emoji={r.emoji} n={r.a} />}
           {r.kind === "add" && (
