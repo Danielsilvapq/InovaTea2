@@ -7,9 +7,10 @@ registros de evolução, que podem ser acompanhados por **responsáveis** e **pr
 ## Funcionalidades
 
 ### Para a criança (modo criança)
-- **Quizzes** com 3 níveis cada: Emoções, Minha Rotina e Situações do Dia a Dia (habilidades sociais).
+- **Quizzes** com 50 fases cada: Emoções, Minha Rotina e Situações do Dia a Dia (habilidades sociais).
 - **Mini-jogos**: Jogo da Memória, Siga a Sequência e Respirar com o Balão (autorregulação).
 - **Conversa com o TeaBot**: robô amigo com linguagem literal e frases curtas, usando a API do Claude. Sem chave de API, funciona com respostas prontas.
+- **50 fases por jogo**, em 5 mundos de 10 fases (Semente, Floresta, Montanha, Céu e Espaço). A dificuldade sobe aos poucos: mais perguntas, grades maiores, sequências mais longas e números maiores. A respiração tem 10 fases.
 - **Barra de progresso sempre visível**: em cada atividade (pergunta X de Y, tempo da sessão), no nível geral e na meta do dia.
 - **Pontos e níveis**: nível geral (Semente → Galáxia) e níveis por atividade. O próximo nível é liberado com 70% de acerto.
 - **Humor ao final**: a criança diz como se sente, e isso fica registrado na sessão.

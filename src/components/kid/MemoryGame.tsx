@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MEMORY_SYMBOLS } from "@/lib/activities";
+import { memoryCols } from "@/lib/generators";
 import { ActivityShell } from "./ActivityShell";
 import { ResultScreen } from "./ResultScreen";
 import { saveSession, useElapsed, useSoftSound, type SaveResult } from "./useKid";
@@ -127,7 +128,7 @@ export function MemoryGame({ patientId, level, pairs, soundOn }: Props) {
         <p className="center" style={{ fontSize: "1.15rem" }}>
           Toque em duas cartas. Se forem iguais, elas ficam abertas. Jogadas: <strong>{moves}</strong>
         </p>
-        <div className="mem-grid" style={{ ["--cols" as string]: pairs === 3 ? 3 : pairs === 10 ? 5 : 4 }}>
+        <div className="mem-grid" style={{ ["--cols" as string]: memoryCols(pairs) }}>
           {deck.map((c, i) => {
             const isOpen = open.includes(i) || matched.has(i);
             return (

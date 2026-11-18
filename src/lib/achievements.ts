@@ -49,28 +49,28 @@ const PASS = 0.7;
 
 export const ACHIEVEMENTS: AchievementDef[] = [
   { id: "emo-1", track: "emocoes", emoji: "🙂", title: "Primeira carinha", goal: "Terminar o Quiz das Emoções 1 vez", measure: once(done("emocoes")) },
-  { id: "emo-2", track: "emocoes", emoji: "🕵️", title: "Detetive das emoções", goal: "Acertar 70% no nível 3 das Emoções", measure: once(done("emocoes", 3, PASS)) },
-  { id: "emo-3", track: "emocoes", emoji: "💖", title: "Mestre das emoções", goal: "Acertar 70% no nível 5 das Emoções", measure: once(done("emocoes", 5, PASS)) },
+  { id: "emo-2", track: "emocoes", emoji: "🕵️", title: "Detetive das emoções", goal: "Passar da fase 20 das Emoções", measure: once(done("emocoes", 20, PASS)) },
+  { id: "emo-3", track: "emocoes", emoji: "💖", title: "Mestre das emoções", goal: "Passar da fase 50 das Emoções", measure: once(done("emocoes", 50, PASS)) },
 
   { id: "cal-1", track: "calma", emoji: "🌬️", title: "Primeiro respiro", goal: "Terminar a respiração 1 vez", measure: once(done("respiracao")) },
   { id: "cal-2", track: "calma", emoji: "🍃", title: "Respiro de 3 dias", goal: "Terminar a respiração em 3 dias diferentes", measure: { kind: "days", filter: done("respiracao"), target: 3 } },
-  { id: "cal-3", track: "calma", emoji: "🎈", title: "Balão tranquilo", goal: "Terminar o nível 3 da respiração", measure: once(done("respiracao", 3)) },
+  { id: "cal-3", track: "calma", emoji: "🎈", title: "Balão tranquilo", goal: "Terminar a fase 10 da respiração", measure: once(done("respiracao", 10)) },
 
   { id: "soc-1", track: "social", emoji: "💬", title: "Bom papo", goal: "Mandar 5 mensagens ao TeaBot numa conversa", measure: once((s) => s.activityKey === "conversa" && s.total >= 5) },
-  { id: "soc-2", track: "social", emoji: "🤝", title: "Amigo gentil", goal: "Acertar 70% no nível 3 das Situações do Dia a Dia", measure: once(done("social", 3, PASS)) },
-  { id: "soc-3", track: "social", emoji: "🗝️", title: "Entendo expressões", goal: "Acertar 70% no nível 5 das Situações do Dia a Dia", measure: once(done("social", 5, PASS)) },
+  { id: "soc-2", track: "social", emoji: "🤝", title: "Amigo gentil", goal: "Passar da fase 20 das Situações do Dia a Dia", measure: once(done("social", 20, PASS)) },
+  { id: "soc-3", track: "social", emoji: "🗝️", title: "Entendo expressões", goal: "Passar da fase 50 das Situações do Dia a Dia", measure: once(done("social", 50, PASS)) },
 
-  { id: "rot-1", track: "rotina", emoji: "🌅", title: "Dia organizado", goal: "Acertar 70% no nível 2 da Minha Rotina", measure: once(done("rotina", 2, PASS)) },
+  { id: "rot-1", track: "rotina", emoji: "🌅", title: "Dia organizado", goal: "Passar da fase 10 da Minha Rotina", measure: once(done("rotina", 10, PASS)) },
   { id: "rot-2", track: "rotina", emoji: "🪜", title: "Passo certo", goal: "Acertar todas as tarefas no Passo a Passo", measure: once(perfect("passos")) },
-  { id: "rot-3", track: "rotina", emoji: "🧭", title: "Planejador", goal: "Acertar 70% no nível 5 do Passo a Passo", measure: once(done("passos", 5, PASS)) },
+  { id: "rot-3", track: "rotina", emoji: "🧭", title: "Planejador", goal: "Passar da fase 50 do Passo a Passo", measure: once(done("passos", 50, PASS)) },
 
   { id: "ate-1", track: "atencao", emoji: "🦅", title: "Olho de águia", goal: "Acertar todas no Encontre o Diferente", measure: once(perfect("diferente")) },
-  { id: "ate-2", track: "atencao", emoji: "🐘", title: "Memória de elefante", goal: "Terminar o nível 5 do Jogo da Memória", measure: once(done("memoria", 5)) },
-  { id: "ate-3", track: "atencao", emoji: "🔷", title: "Sequência perfeita", goal: "Acertar todas as rodadas no nível 4 da Sequência", measure: once(perfect("sequencia", 4)) },
+  { id: "ate-2", track: "atencao", emoji: "🐘", title: "Memória de elefante", goal: "Terminar a fase 50 do Jogo da Memória", measure: once(done("memoria", 50)) },
+  { id: "ate-3", track: "atencao", emoji: "🔷", title: "Sequência perfeita", goal: "Acertar todas as rodadas na fase 30 da Sequência", measure: once(perfect("sequencia", 30)) },
 
-  { id: "num-1", track: "numeros", emoji: "🔢", title: "Sei contar", goal: "Acertar 70% no nível 1 do Vamos Contar", measure: once(done("contar", 1, PASS)) },
-  { id: "num-2", track: "numeros", emoji: "🔟", title: "Até dez", goal: "Acertar 70% no nível 2 do Vamos Contar", measure: once(done("contar", 2, PASS)) },
-  { id: "num-3", track: "numeros", emoji: "➕", title: "Faço contas", goal: "Acertar 70% no nível 5 do Vamos Contar", measure: once(done("contar", 5, PASS)) },
+  { id: "num-1", track: "numeros", emoji: "🔢", title: "Sei contar", goal: "Passar da fase 1 do Vamos Contar", measure: once(done("contar", 1, PASS)) },
+  { id: "num-2", track: "numeros", emoji: "🔟", title: "Até dez", goal: "Passar da fase 10 do Vamos Contar", measure: once(done("contar", 10, PASS)) },
+  { id: "num-3", track: "numeros", emoji: "➕", title: "Faço contas", goal: "Passar da fase 50 do Vamos Contar", measure: once(done("contar", 50, PASS)) },
 
   { id: "con-1", track: "constancia", emoji: "📅", title: "3 dias seguidos", goal: "Fazer atividades 3 dias seguidos", measure: { kind: "streak", target: 3 } },
   { id: "con-2", track: "constancia", emoji: "🗓️", title: "7 dias seguidos", goal: "Fazer atividades 7 dias seguidos", measure: { kind: "streak", target: 7 } },
@@ -163,7 +163,7 @@ export const GOAL_KINDS: { value: GoalKind; label: string }[] = [
   { value: "SESSIONS", label: "Terminar a atividade um número de vezes" },
   { value: "DAYS", label: "Fazer a atividade em dias diferentes" },
   { value: "ACCURACY", label: "Acertar uma porcentagem mínima um número de vezes" },
-  { value: "LEVEL", label: "Chegar a um nível da atividade" },
+  { value: "LEVEL", label: "Chegar a uma fase da atividade" },
 ];
 
 /** Descrição literal da meta, mostrada para a criança e para os adultos. */
@@ -175,7 +175,7 @@ export function describeGoal(g: GoalLike) {
     case "ACCURACY":
       return `Acertar pelo menos ${Math.round((g.minAccuracy ?? 0.7) * 100)}% em ${act}, ${g.target} ${g.target === 1 ? "vez" : "vezes"}`;
     case "LEVEL":
-      return `Terminar o nível ${g.level ?? 1} de ${act}`;
+      return `Terminar a fase ${g.level ?? 1} de ${act}`;
     default:
       return `Terminar ${act} ${g.target} ${g.target === 1 ? "vez" : "vezes"}`;
   }

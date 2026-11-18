@@ -25,7 +25,7 @@ export function ActivityShell({ emoji, title, level, step, totalSteps, stepLabel
             {emoji} {title}
           </h1>
           <div className="row">
-            {level && <span className="badge badge-primary">Nível {level}</span>}
+            {level && <span className="badge badge-primary">Fase {level}</span>}
             <span className="badge" aria-label="Tempo da sessão">⏱ {formatClock(elapsedSec)}</span>
             <button className="btn btn-secondary" onClick={onStop}>
               ⏸ Parar

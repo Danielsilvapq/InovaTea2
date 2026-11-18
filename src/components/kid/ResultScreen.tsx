@@ -56,7 +56,7 @@ export function ResultScreen({ patientId, result, correct, total, durationSec, c
       )}
       {result?.unlockedActivityLevel && (
         <div className="ok-box">
-          🔓 Novo desafio liberado: <strong>nível {result.unlockedActivityLevel}</strong> desta atividade.
+          🔓 Nova fase liberada: <strong>fase {result.unlockedActivityLevel}</strong>!
         </div>
       )}
       {result?.earned?.goals.map((g) => (

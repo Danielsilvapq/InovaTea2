@@ -9,7 +9,7 @@ const EMOJIS = ["🎯", "🌟", "🏅", "🎈", "🌈", "🚀", "🦕", "🐢", 
 
 export function GoalForm({ patientId }: { patientId: string }) {
   const [state, action, pending] = useActionState(addGoal, undefined);
-  const [f, setF] = useState({ title: "", emoji: "🎯", kind: "DAYS" as GoalKind, activityKey: "respiracao", target: 5, minAccuracy: 70, level: 3, note: "", dueDate: "" });
+  const [f, setF] = useState({ title: "", emoji: "🎯", kind: "DAYS" as GoalKind, activityKey: "respiracao", target: 5, minAccuracy: 70, level: 10, note: "", dueDate: "" });
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setF({ ...f, [k]: e.target.type === "number" ? Number(e.target.value) : e.target.value });
   const activity = ACTIVITIES.find((a) => a.key === f.activityKey);
@@ -70,9 +70,9 @@ export function GoalForm({ patientId }: { patientId: string }) {
         )}
         {f.kind === "LEVEL" && (
           <div className="field">
-            <label htmlFor="level">Nível a alcançar</label>
+            <label htmlFor="level">Fase a alcançar</label>
             <select id="level" name="level" value={f.level} onChange={set("level")}>
-              {Array.from({ length: activity?.levels ?? 5 }, (_, i) => i + 1).map((l) => <option key={l} value={l}>Nível {l}</option>)}
+              {Array.from({ length: activity?.levels ?? 5 }, (_, i) => i + 1).map((l) => <option key={l} value={l}>Fase {l}</option>)}
             </select>
             <input type="hidden" name="target" value={1} />
           </div>

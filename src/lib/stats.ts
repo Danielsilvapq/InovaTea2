@@ -89,7 +89,7 @@ export function buildStats(sessions: ActivitySession[]) {
   const accuracyTimeline = scored.slice(-20).map((s) => ({
     label: `${s.startedAt.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })} · ${
       ACTIVITIES.find((a) => a.key === s.activityKey)?.title ?? s.activityKey
-    } (nível ${s.level})`,
+    } (fase ${s.level})`,
     value: Math.round(s.accuracy * 100),
   }));
 

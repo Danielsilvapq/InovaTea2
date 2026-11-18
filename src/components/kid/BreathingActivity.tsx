@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BREATHING_BY_LEVEL } from "@/lib/activities";
+import { breathingConfig } from "@/lib/generators";
 import { useRouter } from "next/navigation";
 import { ActivityShell } from "./ActivityShell";
 import { ResultScreen } from "./ResultScreen";
@@ -9,7 +9,7 @@ import { saveSession, useElapsed, type SaveResult } from "./useKid";
 
 export function BreathingActivity({ patientId, reduceMotion, level }: { patientId: string; reduceMotion: boolean; level: number }) {
   const router = useRouter();
-  const cfg = BREATHING_BY_LEVEL[level] ?? BREATHING_BY_LEVEL[1];
+  const cfg = breathingConfig(level);
   const CYCLES = cfg.cycles;
   const PHASES = [
     { key: "in", label: "Puxe o ar pelo nariz", seconds: cfg.inhale, scale: 1.35 },

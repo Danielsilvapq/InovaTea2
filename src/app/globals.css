@@ -257,6 +257,16 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--p
   .sort-bin { min-height: 0; }
 }
 
+/* Mapa de fases */
+.world { display: grid; gap: 10px; padding: 14px; border-radius: 18px; background: var(--surface-2); }
+.world.locked { opacity: 0.7; border: 2px dashed var(--line); background: transparent; }
+.phase-grid { display: grid; gap: 8px; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.phase { aspect-ratio: 1; max-width: 100%; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 1.15rem; text-decoration: none; border: 3px solid var(--line); background: var(--surface); color: var(--ink); }
+.phase.done { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); }
+.phase.current { background: var(--primary); border-color: var(--primary); color: var(--primary-ink); box-shadow: var(--focus); }
+.phase.locked { color: var(--ink-muted); opacity: 0.55; font-size: 0.95rem; }
+@media (min-width: 700px) { .phase-grid { grid-template-columns: repeat(10, minmax(0, 1fr)); } }
+
 /* Conquistas */
 .trail { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr)); margin-top: 12px; }
 .badge-card { display: grid; gap: 6px; justify-items: center; text-align: center; padding: 16px 12px; border-radius: 20px; border: 2px solid var(--line); background: var(--surface); align-content: start; }

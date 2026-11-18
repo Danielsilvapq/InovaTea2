@@ -10,7 +10,7 @@ import { newlyEarned } from "@/lib/achievements";
 const schema = z.object({
   patientId: z.string(),
   activityKey: z.string(),
-  level: z.number().int().min(1).max(5),
+  level: z.number().int().min(1).max(50),
   correct: z.number().int().min(0),
   wrong: z.number().int().min(0),
   total: z.number().int().min(0),

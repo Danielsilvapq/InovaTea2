@@ -171,7 +171,7 @@ export default async function PacientePage({ params }: { params: Promise<{ id: s
             <tr>
               <th>Atividade</th>
               <th>Habilidade</th>
-              <th>Nível liberado</th>
+              <th>Fase liberada</th>
               <th>Sessões</th>
               <th>Tempo</th>
               <th style={{ minWidth: 160 }}>Acerto médio</th>
@@ -217,7 +217,7 @@ export default async function PacientePage({ params }: { params: Promise<{ id: s
               <tr>
                 <th>Data</th>
                 <th>Atividade</th>
-                <th>Nível</th>
+                <th>Fase</th>
                 <th>Resultado</th>
                 <th>Duração</th>
                 <th>Pontos</th>
@@ -422,7 +422,7 @@ export default async function PacientePage({ params }: { params: Promise<{ id: s
                 placeholder={
                   isGuardian
                     ? "Ex.: Hoje ele ficou mais tranquilo depois da atividade de respiração."
-                    : "Ex.: Sugiro manter o quiz de emoções no nível 2 esta semana."
+                    : "Ex.: Sugiro manter o quiz de emoções na fase 12 esta semana."
                 }
               />
             </div>

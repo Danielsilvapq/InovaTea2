@@ -37,7 +37,7 @@ export function levelInfo(totalPoints: number) {
 
 /** Acerto mínimo para liberar o próximo nível de uma atividade. */
 export const UNLOCK_ACCURACY = 0.7;
-export const MAX_ACTIVITY_LEVEL = 5;
+export const MAX_ACTIVITY_LEVEL = 50;
 
 export function computePoints(input: {
   activityType: string;
@@ -53,7 +53,8 @@ export function computePoints(input: {
   if (input.activityType === "BREATHING") {
     return input.completed ? 20 + 10 * input.level : 10;
   }
-  const base = input.correct * 10 * input.level;
+  // Cada fase vale um pouco mais que a anterior (fase 1: 11 por acerto; fase 50: 60).
+  const base = input.correct * (10 + input.level);
   const bonus = input.completed ? 20 : 0;
   const perfect = input.completed && input.total > 0 && input.correct === input.total ? 15 : 0;
   return base + bonus + perfect;

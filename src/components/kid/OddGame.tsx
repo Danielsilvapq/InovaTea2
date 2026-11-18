@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ODD_ROUNDS } from "@/lib/activities";
 import { oddRounds, type OddRound } from "@/lib/generators";
 import { ActivityShell } from "./ActivityShell";
 import { ResultScreen } from "./ResultScreen";
@@ -24,6 +23,7 @@ export function OddGame({ patientId, level, soundOn }: { patientId: string; leve
   const timer = useElapsed(!done);
   const play = useSoftSound(soundOn);
   const r = rounds[round];
+  const ODD_ROUNDS = rounds.length || 5;
 
   function choose(i: number) {
     if (chosen !== null || !r) return;

@@ -2,7 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getKidPatient } from "@/lib/kid-access";
 import { db } from "@/lib/db";
-import { getActivity, getQuiz, LEVEL_EMOJIS, MEMORY_PAIRS_BY_LEVEL, SEQUENCE_LENGTH_BY_LEVEL } from "@/lib/activities";
+import { getActivity } from "@/lib/activities";
+import { memoryPairs, quizRound, sequenceConfig } from "@/lib/generators";
+import { PhaseMap } from "@/components/kid/PhaseMap";
 import { unlockedLevel } from "@/lib/stats";
 import { UNLOCK_ACCURACY } from "@/lib/gamification";
 import { QuizGame } from "@/components/kid/QuizGame";
@@ -39,37 +41,26 @@ export default async function ActivityPage({
 
   if (!level || level < 1 || level > unlocked) {
     return (
-      <div className="card stack center" style={{ maxWidth: 720, margin: "0 auto" }}>
-        <div style={{ fontSize: "4rem" }}>{activity.emoji}</div>
-        <h1>{activity.title}</h1>
-        <p style={{ fontSize: "1.15rem" }}>{activity.description}</p>
-        <h2>Escolha o nível</h2>
-        <div className="option-grid">
-          {Array.from({ length: activity.levels }, (_, i) => i + 1).map((l) =>
-            l <= unlocked ? (
-              <Link key={l} href={`/crianca/${id}/${key}?nivel=${l}`} className="option" style={{ textDecoration: "none" }}>
-                <span className="emoji">{LEVEL_EMOJIS[l - 1]}</span>
-                Nível {l}
-              </Link>
-            ) : (
-              <div key={l} className="option" style={{ opacity: 0.55, cursor: "default" }} aria-disabled>
-                <span className="emoji">🔒</span>
-                Nível {l}
-                <span className="small muted">Acerte {Math.round(UNLOCK_ACCURACY * 100)}% no nível {l - 1}</span>
-              </div>
-            ),
-          )}
+      <div className="card stack" style={{ maxWidth: 760, margin: "0 auto" }}>
+        <div className="center">
+          <div style={{ fontSize: "4rem" }}>{activity.emoji}</div>
+          <h1>{activity.title}</h1>
+          <p style={{ fontSize: "1.15rem" }}>{activity.description}</p>
         </div>
-        <Link href={`/crianca/${id}`} className="btn btn-secondary">
-          ← Voltar
-        </Link>
+        <PhaseMap baseHref={`/crianca/${id}/${key}`} total={activity.levels} unlocked={unlocked} />
+        <p className="small muted center">Para abrir a próxima fase, acerte {Math.round(UNLOCK_ACCURACY * 100)}% ou mais.</p>
+        <div className="center">
+          <Link href={`/crianca/${id}`} className="btn btn-secondary">
+            ← Voltar
+          </Link>
+        </div>
       </div>
     );
   }
 
   if (activity.type === "QUIZ") {
-    const questions = getQuiz(key, level);
-    if (!questions) notFound();
+    const questions = quizRound(key, level);
+    if (!questions.length) notFound();
     return (
       <QuizGame
         key={`${key}-${level}`}
@@ -91,7 +82,7 @@ export default async function ActivityPage({
   if (activity.type === "SORT") return <SortGame key={level} patientId={id} level={level} soundOn={patient.soundOn} />;
   if (activity.type === "ORDER") return <OrderGame key={level} patientId={id} level={level} soundOn={patient.soundOn} />;
   if (activity.type === "MEMORY") {
-    return <MemoryGame key={level} patientId={id} level={level} pairs={MEMORY_PAIRS_BY_LEVEL[level]} soundOn={patient.soundOn} />;
+    return <MemoryGame key={level} patientId={id} level={level} pairs={memoryPairs(level)} soundOn={patient.soundOn} />;
   }
-  return <SequenceGame key={level} patientId={id} level={level} length={SEQUENCE_LENGTH_BY_LEVEL[level]} soundOn={patient.soundOn} />;
+  return <SequenceGame key={level} patientId={id} level={level} length={sequenceConfig(level).length} soundOn={patient.soundOn} />;
 }

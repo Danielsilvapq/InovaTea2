@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { COUNT_ROUNDS } from "@/lib/activities";
 import { countRounds, type CountRound } from "@/lib/generators";
 import { ActivityShell } from "./ActivityShell";
 import { ResultScreen } from "./ResultScreen";
@@ -35,6 +34,7 @@ export function CountGame({ patientId, level, soundOn }: { patientId: string; le
   const timer = useElapsed(!done);
   const play = useSoftSound(soundOn);
   const r = rounds[round];
+  const COUNT_ROUNDS = rounds.length || 5;
 
   function choose(n: number) {
     if (chosen !== null || !r) return;

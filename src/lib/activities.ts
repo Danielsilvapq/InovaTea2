@@ -23,7 +23,7 @@ export const ACTIVITIES: ActivityDef[] = [
     description: "Descubra como as pessoas estão se sentindo.",
     skill: "Reconhecimento de emoções",
     color: "sky",
-    levels: 5,
+    levels: 50,
   },
   {
     key: "rotina",
@@ -33,7 +33,7 @@ export const ACTIVITIES: ActivityDef[] = [
     description: "O que vem antes e o que vem depois?",
     skill: "Rotina e sequência temporal",
     color: "sage",
-    levels: 5,
+    levels: 50,
   },
   {
     key: "social",
@@ -43,7 +43,7 @@ export const ACTIVITIES: ActivityDef[] = [
     description: "O que podemos fazer em cada situação?",
     skill: "Habilidades sociais",
     color: "lavender",
-    levels: 5,
+    levels: 50,
   },
   {
     key: "memoria",
@@ -53,7 +53,7 @@ export const ACTIVITIES: ActivityDef[] = [
     description: "Encontre os pares iguais.",
     skill: "Memória e atenção",
     color: "sand",
-    levels: 5,
+    levels: 50,
   },
   {
     key: "sequencia",
@@ -63,7 +63,7 @@ export const ACTIVITIES: ActivityDef[] = [
     description: "Observe e repita as formas na mesma ordem.",
     skill: "Atenção e memória de trabalho",
     color: "sky",
-    levels: 5,
+    levels: 50,
   },
   {
     key: "diferente",
@@ -73,7 +73,7 @@ export const ACTIVITIES: ActivityDef[] = [
     description: "Qual figura não é igual às outras?",
     skill: "Atenção visual e discriminação",
     color: "sand",
-    levels: 5,
+    levels: 50,
   },
   {
     key: "contar",
@@ -83,7 +83,7 @@ export const ACTIVITIES: ActivityDef[] = [
     description: "Conte as figuras e escolha o número.",
     skill: "Números, contagem e cálculo",
     color: "sky",
-    levels: 5,
+    levels: 50,
   },
   {
     key: "classificar",
@@ -93,7 +93,7 @@ export const ACTIVITIES: ActivityDef[] = [
     description: "Coloque cada figura no grupo certo.",
     skill: "Categorização e flexibilidade",
     color: "lavender",
-    levels: 5,
+    levels: 50,
   },
   {
     key: "passos",
@@ -103,7 +103,7 @@ export const ACTIVITIES: ActivityDef[] = [
     description: "Monte a ordem certa de cada tarefa.",
     skill: "Sequência de ações e funções executivas",
     color: "sage",
-    levels: 5,
+    levels: 50,
   },
   {
     key: "respiracao",
@@ -113,7 +113,7 @@ export const ACTIVITIES: ActivityDef[] = [
     description: "Um momento calmo para respirar devagar.",
     skill: "Autorregulação emocional",
     color: "sage",
-    levels: 3,
+    levels: 10,
   },
   {
     key: "conversa",
@@ -624,7 +624,7 @@ Object.assign(QUIZZES.social, {
 });
 
 /** Símbolos usados no jogo da memória e na sequência. */
-export const MEMORY_SYMBOLS = ["🐶", "🐱", "🐢", "🐟", "🦋", "🐸", "🦉", "🐰", "🦁", "🐼", "🐧", "🦒"];
+export const MEMORY_SYMBOLS = ["🐶", "🐱", "🐢", "🐟", "🦋", "🐸", "🦉", "🐰", "🦁", "🐼", "🐧", "🦒", "🐨", "🦊"];
 export const MEMORY_PAIRS_BY_LEVEL: Record<number, number> = { 1: 3, 2: 4, 3: 6, 4: 8, 5: 10 };
 
 export const SEQUENCE_SHAPES = [
@@ -745,3 +745,74 @@ export const ORDER_BY_LEVEL: Record<number, { size: number; rounds: number }> = 
 };
 
 export const LEVEL_EMOJIS = ["🌱", "🌿", "🌳", "⭐", "🚀"];
+
+// ---------------------------------------------------------------------------
+// Perguntas extras dos mundos 1 e 2 (os mais jogados), para dar variedade.
+// ---------------------------------------------------------------------------
+QUIZZES.emocoes[1].push(
+  q("Como esta carinha está se sentindo?", "😨", [["Com medo", "😨"], ["Feliz", "😄"], ["Com sono", "😴"]], "Olhos arregalados e boca aberta podem mostrar medo."),
+  q("Como esta carinha está se sentindo?", "😮", [["Triste", "😢"], ["Surpreso", "😮"], ["Bravo", "😠"]], "Boca em forma de O mostra surpresa.", 1),
+  q("Como esta carinha está se sentindo?", "🤒", [["Feliz", "😄"], ["Animado", "🤩"], ["Doente", "🤒"]], "O termômetro na boca mostra que a pessoa está doente.", 2),
+  q("Como esta carinha está se sentindo?", "🤩", [["Animado", "🤩"], ["Triste", "😢"], ["Com sono", "😴"]], "Estrelas nos olhos mostram que a pessoa está muito animada."),
+);
+QUIZZES.emocoes[2].push(
+  q("Meu amigo veio brincar na minha casa. Como eu me sinto?", "🏠", [["Feliz", "😄"], ["Bravo", "😠"], ["Com medo", "😨"]], "Brincar com um amigo costuma deixar a gente feliz."),
+  q("Perdi meu brinquedo favorito. Como posso me sentir?", "🧸", [["Animado", "🤩"], ["Triste", "😢"], ["Com sono", "😴"]], "Perder algo que gostamos pode deixar a gente triste.", 1),
+  q("Vou andar de montanha-russa pela primeira vez. Como posso me sentir?", "🎢", [["Com sono", "😴"], ["Bravo", "😠"], ["Nervoso e animado", "😬"]], "Coisas novas podem deixar a gente nervoso e animado ao mesmo tempo.", 2),
+  q("Alguém derrubou minha torre de blocos de propósito. Como posso me sentir?", "🧱", [["Bravo", "😠"], ["Feliz", "😄"], ["Com fome", "🤤"]], "É normal ficar bravo. Podemos dizer: 'Não gostei disso'."),
+);
+QUIZZES.rotina[1].push(
+  q("O que usamos para tomar sopa?", "🍲", [["Colher", "🥄"], ["Pente", "🪮"], ["Lápis", "✏️"]], "Tomamos sopa com a colher."),
+  q("Onde guardamos o leite para ficar gelado?", "🥛", [["Na mochila", "🎒"], ["Na geladeira", "❄️"], ["Na cama", "🛏️"]], "A geladeira deixa os alimentos gelados.", 1),
+  q("O que usamos para secar o corpo depois do banho?", "🛁", [["Prato", "🍽️"], ["Livro", "📚"], ["Toalha", "🧺"]], "Secamos o corpo com a toalha.", 2),
+  q("Quando está escuro, o que acendemos?", "🌙", [["A luz", "💡"], ["O fogão", "🍳"], ["A torneira", "🚰"]], "Acendemos a luz para enxergar."),
+);
+QUIZZES.rotina[2].push(
+  q("Primeiro eu coloco o pijama. Depois eu...", "👕", [["Vou dormir", "🛏️"], ["Vou para a escola", "🏫"], ["Almoço", "🍲"]], "Depois do pijama, é hora de dormir."),
+  q("Acabei de brincar. O que faço com os brinquedos?", "🧸", [["Deixo no chão", "⬇️"], ["Guardo na caixa", "📦"], ["Jogo pela janela", "🪟"]], "Guardamos os brinquedos para achar depois.", 1),
+  q("Primeiro eu encho o copo de água. Depois eu...", "🥤", [["Durmo", "😴"], ["Vou nadar", "🏊"], ["Bebo a água", "😋"]], "Enchemos o copo e depois bebemos.", 2),
+  q("Está muito sol e calor. O que eu uso?", "☀️", [["Boné e protetor solar", "🧢"], ["Casaco grosso", "🧥"], ["Cachecol", "🧣"]], "O boné e o protetor solar protegem do sol."),
+);
+QUIZZES.social[1].push(
+  q("Alguém me deu parabéns no meu aniversário. O que eu digo?", "🎂", [["Obrigado!", "🙏"], ["Vai embora", "🙅"], ["Nada", "🤐"]], "Agradecemos quando alguém fala algo gentil."),
+  q("Quero que alguém me passe o lápis. O que eu digo?", "✏️", [["Me dá isso agora!", "😠"], ["Por favor, me passa o lápis?", "🙏"], ["Pego da mão dele", "✋"]], "'Por favor' é a palavra gentil para pedir.", 1),
+  q("É hora de ir embora da festa. O que eu digo aos amigos?", "🎉", [["Nada", "🤐"], ["Saio correndo", "🏃"], ["Tchau!", "👋"]], "Dizemos tchau quando vamos embora.", 2),
+  q("Alguém está chorando perto de mim. O que posso fazer?", "😢", [["Perguntar se está bem ou chamar um adulto", "🤝"], ["Rir", "😂"], ["Gritar", "📢"]], "Perguntar 'Você está bem?' mostra que nos importamos."),
+);
+QUIZZES.social[2].push(
+  q("Meu amigo ganhou o jogo. O que posso dizer?", "🏆", [["Parabéns!", "👏"], ["Não vale!", "😠"], ["Nada", "🤐"]], "Dar parabéns é uma atitude de bom amigo."),
+  q("Quero brincar sozinho agora. O que posso dizer?", "🧩", [["Sai daqui!", "😠"], ["Agora quero brincar sozinho, tudo bem?", "🙂"], ["Empurro a pessoa", "👐"]], "Podemos dizer o que queremos com calma.", 1),
+  q("A professora pediu silêncio. O que eu faço?", "🤫", [["Canto alto", "🎤"], ["Bato na mesa", "✊"], ["Fico em silêncio", "🤫"]], "Quando pedem silêncio, paramos de falar.", 2),
+  q("Chegou um colega novo na turma. O que posso fazer?", "🧒", [["Digo oi e falo meu nome", "👋"], ["Fico olhando sem falar", "👀"], ["Me escondo", "🙈"]], "Dizer oi ajuda o colega novo a se sentir bem-vindo."),
+);
+
+// ---------------------------------------------------------------------------
+// Conjuntos extras para Separar e Organizar: cada mundo alterna entre dois.
+// ---------------------------------------------------------------------------
+export const SORT_EXTRA_BY_TIER: Record<number, SortSet> = {
+  1: {
+    title: "Brinquedo ou comida?",
+    categories: [{ label: "Brinquedos", emoji: "🧸" }, { label: "Comidas", emoji: "🍽️" }],
+    items: [...items(0, [["⚽", "Bola"], ["🪁", "Pipa"], ["🧩", "Quebra-cabeça"]]), ...items(1, [["🍎", "Maçã"], ["🍪", "Biscoito"], ["🥕", "Cenoura"]])],
+  },
+  2: {
+    title: "É quente ou é frio?",
+    categories: [{ label: "Quente", emoji: "🔥" }, { label: "Frio", emoji: "❄️" }],
+    items: [...items(0, [["☕", "Café"], ["🌞", "Sol"], ["🍲", "Sopa"], ["🔥", "Fogo"]]), ...items(1, [["🧊", "Gelo"], ["🍦", "Sorvete"], ["⛄", "Boneco de neve"], ["🥶", "Rosto com frio"]])],
+  },
+  3: {
+    title: "Esse transporte anda na terra, na água ou no ar?",
+    categories: [{ label: "Terra", emoji: "🛣️" }, { label: "Água", emoji: "🌊" }, { label: "Ar", emoji: "☁️" }],
+    items: [...items(0, [["🚲", "Bicicleta"], ["🚌", "Ônibus"], ["🚂", "Trem"]]), ...items(1, [["🚤", "Lancha"], ["⛴️", "Balsa"], ["🛶", "Canoa"]]), ...items(2, [["🚁", "Helicóptero"], ["🚀", "Foguete"], ["🛩️", "Avião pequeno"]])],
+  },
+  4: {
+    title: "Qual é a cor: vermelho, verde ou amarelo?",
+    categories: [{ label: "Vermelho", emoji: "🟥" }, { label: "Verde", emoji: "🟩" }, { label: "Amarelo", emoji: "🟨" }],
+    items: [...items(0, [["🍓", "Morango"], ["🚒", "Caminhão de bombeiro"], ["🌹", "Rosa"], ["🍅", "Tomate"]]), ...items(1, [["🥦", "Brócolis"], ["🐸", "Sapo"], ["🍏", "Maçã verde"], ["🌲", "Pinheiro"]]), ...items(2, [["🍌", "Banana"], ["🌻", "Girassol"], ["🐥", "Pintinho"], ["🧀", "Queijo"]])],
+  },
+  5: {
+    title: "Essa carinha está feliz, triste ou brava?",
+    categories: [{ label: "Feliz", emoji: "😄" }, { label: "Triste", emoji: "😢" }, { label: "Bravo", emoji: "😠" }],
+    items: [...items(0, [["😁", "Sorriso grande"], ["🥳", "Festa"], ["😊", "Sorriso calmo"], ["😆", "Rindo"]]), ...items(1, [["😭", "Chorando"], ["😞", "Desanimado"], ["😔", "Cabisbaixo"], ["🥺", "Olhos tristes"]]), ...items(2, [["😡", "Muito bravo"], ["😤", "Bufando"], ["😾", "Gato bravo"], ["👿", "Carranca"]])],
+  },
+};

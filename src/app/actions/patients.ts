@@ -152,11 +152,11 @@ const goalSchema = z
     activityKey: z.string().optional(),
     target: z.coerce.number().int().min(1).max(60),
     minAccuracy: z.coerce.number().int().min(10).max(100).optional(),
-    level: z.coerce.number().int().min(1).max(5).optional(),
+    level: z.coerce.number().int().min(1).max(50).optional(),
     dueDate: z.string().optional(),
   })
   .superRefine((v, ctx) => {
-    if (v.kind === "LEVEL" && !v.activityKey) ctx.addIssue({ code: "custom", message: "Escolha a atividade para a meta de nível." });
+    if (v.kind === "LEVEL" && !v.activityKey) ctx.addIssue({ code: "custom", message: "Escolha a atividade para a meta de fase." });
   });
 
 export async function addGoal(_: FormState, formData: FormData): Promise<FormState> {

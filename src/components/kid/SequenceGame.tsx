@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { SEQUENCE_ROUNDS, SEQUENCE_SHAPES, sequenceShapesForLevel } from "@/lib/activities";
+import { SEQUENCE_ROUNDS, SEQUENCE_SHAPES } from "@/lib/activities";
+import { sequenceConfig } from "@/lib/generators";
+
+const sequenceShapesForLevel = (level: number) => sequenceConfig(level).shapes;
 import { ActivityShell } from "./ActivityShell";
 import { ResultScreen } from "./ResultScreen";
 import { saveSession, useElapsed, useSoftSound, type SaveResult } from "./useKid";
@@ -167,7 +170,7 @@ export function SequenceGame({ patientId, level, length, soundOn }: Props) {
             )}
             {phase === "build" && (
               <>
-                <div className="option-grid" style={{ maxWidth: 560, margin: "0 auto", gridTemplateColumns: `repeat(${level >= 4 ? 3 : 2}, minmax(0, 1fr))` }}>
+                <div className="option-grid" style={{ maxWidth: 560, margin: "0 auto", gridTemplateColumns: `repeat(${sequenceShapesForLevel(level).length > 4 ? 3 : 2}, minmax(0, 1fr))` }}>
                   {sequenceShapesForLevel(level).map((s) => (
                     <button key={s.id} className="option" onClick={() => tap(s.id)}>
                       <span className="emoji">{s.emoji}</span>

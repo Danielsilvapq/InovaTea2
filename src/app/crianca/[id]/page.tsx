@@ -64,7 +64,7 @@ export default async function KidHome({ params }: { params: Promise<{ id: string
                 <ProgressBar
                   value={level / a.levels}
                   tone="primary"
-                  label={`Nível ${level} de ${a.levels}`}
+                  label={`Fase ${level} de ${a.levels}`}
                   rightLabel={`${count}x jogado`}
                 />
               ) : (

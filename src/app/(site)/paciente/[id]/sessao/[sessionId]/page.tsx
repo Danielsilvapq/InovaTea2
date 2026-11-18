@@ -37,7 +37,7 @@ export default async function SessaoPage({ params }: { params: Promise<{ id: str
         <div className="row small">
           <span className="badge">📅 {s.startedAt.toLocaleString("pt-BR")}</span>
           <span className="badge">⏱ {formatDuration(s.durationSec)}</span>
-          <span className="badge">Nível {s.level}</span>
+          <span className="badge">Fase {s.level}</span>
           <span className="badge">⭐ {s.points} pontos</span>
           {s.total > 0 && s.activityType !== "CHAT" && (
             <span className="badge badge-ok">
